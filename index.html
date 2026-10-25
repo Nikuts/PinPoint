@@ -308,6 +308,74 @@
       box-shadow: 0 0 6px var(--accent-glow);
     }
 
+    
+    /* Mobile Panel Navigation Header */
+    .panel-mobile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .panel-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-card);
+      border: 1px solid var(--accent);
+      color: var(--accent-hover);
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .panel-back-btn:hover {
+      background: rgba(14, 165, 233, 0.2);
+    }
+    .panel-back-btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-danger-subtle {
+      border-color: rgba(239, 68, 68, 0.4) !important;
+      color: #f87171 !important;
+    }
+    .btn-danger-subtle:hover {
+      background: rgba(239, 68, 68, 0.15) !important;
+      border-color: var(--danger) !important;
+      color: #fca5a5 !important;
+    }
+
+    /* Document badges list on Sheet tab */
+    .sheet-doc-badges-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .sheet-doc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sheet-doc-title {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-main);
+    }
+
     /* Mobile vs Desktop Tab Visibility */
     @media (min-width: 1024px) {
       .mobile-nav-bar {
@@ -320,7 +388,10 @@
 
     @media (max-width: 1023px) {
       body {
-        padding-bottom: calc(env(safe-area-inset-bottom) + 74px);
+        padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+      }
+      .mobile-nav-bar {
+        display: flex !important;
       }
       main {
         display: block;
@@ -335,6 +406,15 @@
       .mobile-tab-content.mobile-active {
         display: flex !important;
         animation: fadeIn 0.2s ease-out;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .panel-mobile-header {
+        display: none !important;
+      }
+      #sheetDocBadgesCard {
+        display: none !important;
       }
     }
 
@@ -1700,18 +1780,16 @@
         </div>
 
         <!-- Quick Image Actions -->
-        <div style="display: flex; gap: 0.5rem; justify-content: space-between;">
-          <button type="button" class="mini-action-btn" id="centerImgBtn">
+        <div class="crop-actions-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.45rem;">
+          <button type="button" class="mini-action-btn" id="centerImgBtn" data-i18n-title="centerImgTooltip" title="Вирівняти фото по центру">
             🎯 <span data-i18n="centerImg">Центрувати</span>
           </button>
-          <div style="display: flex; gap: 0.35rem;">
-            <button type="button" class="mini-action-btn camera-btn" id="cameraBtn">
-              📷 <span data-i18n="cameraBtn">Камера</span>
-            </button>
-            <button type="button" class="mini-action-btn" id="replaceImgBtn">
-              🔄 <span data-i18n="replacePhoto">Галерея</span>
-            </button>
-          </div>
+          <button type="button" class="mini-action-btn" id="replaceImgBtn" data-i18n-title="replacePhotoTooltip" title="Замінити фото на інше">
+            🔄 <span data-i18n="replacePhoto">Замінити</span>
+          </button>
+          <button type="button" class="mini-action-btn btn-danger-subtle" id="discardPhotoBtn" data-i18n-title="discardPhotoTooltip" title="Прибрати це фото">
+            🗑️ <span data-i18n="discardPhoto">Прибрати</span>
+          </button>
         </div>
 
         <!-- Add To Sheet Row -->
@@ -1732,6 +1810,14 @@
     <div class="desktop-right-col">
       <!-- 2. QUEUE PANEL -->
       <section id="queuePanel" class="dashboard-panel mobile-tab-content">
+        <div class="panel-mobile-header">
+          <button type="button" class="panel-back-btn" id="queueBackToEditorBtn">
+            <span data-i18n="backToEditor">← Редактор (додати ще)</span>
+          </button>
+          <button type="button" class="panel-back-btn" id="queueGoToSheetBtn" style="border-color: var(--accent); color: var(--accent-hover);">
+            <span data-i18n="tabSheet">Аркуш</span> ➔
+          </button>
+        </div>
         <div class="panel-header">
           <div style="display: flex; align-items: center; gap: 0.5rem;">
             <h2 class="panel-title">
@@ -1754,6 +1840,15 @@
 
       <!-- 3. SHEET PREVIEW & PDF EXPORT PANEL -->
       <section id="sheetPanel" class="dashboard-panel mobile-tab-content">
+        <!-- Mobile Top Navigation Header -->
+        <div class="panel-mobile-header">
+          <button type="button" class="panel-back-btn" id="sheetBackToEditorBtn">
+            <span data-i18n="backToEditor">← Редактор (додати ще)</span>
+          </button>
+          <button type="button" class="mini-action-btn btn-danger-subtle" id="sheetClearDocBtn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з документа">
+            🗑 <span data-i18n="clearDocBtn">Очистити аркуш</span>
+          </button>
+        </div>
         <!-- Paper Format & Margins Setup -->
         <div class="paper-settings-card">
           <div class="paper-header-row">
@@ -1833,6 +1928,22 @@
           <!-- High-Res Interactive Sheet Canvas -->
           <div class="sheet-canvas-container" id="sheetCanvasContainer">
             <canvas id="sheetCanvas" width="840" height="1188"></canvas>
+          </div>
+        </div>
+
+        <!-- Badges on Sheet (Direct Management & Delete from Document) -->
+        <div class="sheet-doc-badges-card" id="sheetDocBadgesCard">
+          <div class="sheet-doc-header">
+            <div class="sheet-doc-title">
+              📋 <span data-i18n="docBadgesTitle">Значки на аркуші:</span>
+              <span id="sheetDocCountBadge" class="queue-badge-count">0 шт.</span>
+            </div>
+            <button type="button" class="mini-action-btn" id="sheetClearAllBtn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з документа">
+              🗑 <span data-i18n="clearDocBtn">Очистити</span>
+            </button>
+          </div>
+          <div id="sheetBadgesListContainer" class="queue-list-container">
+            <!-- Dynamically populated badge cards with delete/stepper buttons -->
           </div>
         </div>
 
@@ -1961,6 +2072,13 @@
         cardDeleteTooltip: "Видалити значок",
         cardDecreaseTooltip: "Зменшити кількість",
         cardIncreaseTooltip: "Збільшити кількість",
+        backToEditor: "← Назад до редактора",
+        discardPhoto: "Прибрати фото",
+        discardPhotoTooltip: "Прибрати це фото з редактора",
+        replacePhotoTooltip: "Замінити фото на інше",
+        toastPhotoDiscarded: "Фото прибрано з редактора",
+        docBadgesTitle: "Значки на аркуші:",
+        clearDocBtn: "Очистити аркуш",
         clearModalTitle: "Очистити чергу?",
         clearConfirm: "Ви впевнені, що хочете видалити всі значки з черги?",
         cancel: "Скасувати",
@@ -2083,6 +2201,13 @@
         cardDeleteTooltip: "Delete badge",
         cardDecreaseTooltip: "Decrease quantity",
         cardIncreaseTooltip: "Increase quantity",
+        backToEditor: "← Back to Editor",
+        discardPhoto: "Discard Photo",
+        discardPhotoTooltip: "Discard this photo from editor",
+        replacePhotoTooltip: "Replace photo with another",
+        toastPhotoDiscarded: "Photo discarded from editor",
+        docBadgesTitle: "Badges on Sheet:",
+        clearDocBtn: "Clear Sheet",
         clearModalTitle: "Clear Queue?",
         clearConfirm: "Are you sure you want to remove all badges from the queue?",
         cancel: "Cancel",
@@ -3048,6 +3173,31 @@
       return offCanvas.toDataURL('image/png');
     }
 
+
+    function discardCurrentPhoto() {
+      if (!state.image) return;
+      state.image = null;
+      state.imgName = 'Pin Badge';
+      state.imgX = 0;
+      state.imgY = 0;
+      state.zoom = 1.0;
+      state.rotation = 0;
+      state.copies = 1;
+      const copiesInput = document.getElementById('copiesInput');
+      if (copiesInput) copiesInput.value = '1';
+
+      updateZoomUI();
+      updateRotationUI();
+
+      // Show the empty overlay
+      const emptyOverlay = document.getElementById('canvasEmptyOverlay');
+      if (emptyOverlay) emptyOverlay.classList.remove('hidden');
+
+      drawCropCanvas();
+      triggerHaptic('light');
+      showToast(I18N[state.lang].toastPhotoDiscarded);
+    }
+
     function addBadgeToQueue() {
       if (!state.image) {
         showToast(I18N[state.lang].toastNeedImage);
@@ -3098,73 +3248,85 @@
 
     function renderQueueList() {
       const container = document.getElementById('queueListContainer');
+      const sheetContainer = document.getElementById('sheetBadgesListContainer');
       const countBadge = document.getElementById('queueCountBadge');
+      const sheetDocCountBadge = document.getElementById('sheetDocCountBadge');
+      const mobBadge = document.getElementById('mobileQueueBadge');
       const dict = I18N[state.lang];
       
       const totalBadges = state.queue.reduce((sum, item) => sum + item.count, 0);
-      if (countBadge) countBadge.textContent = `${totalBadges} ${dict.queueUnit}`;
-      const mobBadge = document.getElementById('mobileQueueBadge');
+      const countStr = `${totalBadges} ${dict.queueUnit}`;
+      if (countBadge) countBadge.textContent = countStr;
+      if (sheetDocCountBadge) sheetDocCountBadge.textContent = countStr;
       if (mobBadge) mobBadge.textContent = totalBadges;
 
-      if (!container) return;
+      const renderInto = (targetContainer) => {
+        if (!targetContainer) return;
 
-      if (state.queue.length === 0) {
-        container.innerHTML = `
-          <div class="queue-empty-placeholder" data-i18n="queueEmpty">
-            ${dict.queueEmpty}
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = '';
-      state.queue.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'queue-item-card';
-        card.innerHTML = `
-          <div class="queue-thumb-wrap">
-            <img src="${item.thumbUrl}" alt="Badge preview" class="queue-thumb-img">
-          </div>
-          <div class="queue-item-meta">
-            <div class="queue-item-title" title="${item.name}">${item.name}</div>
-            <div class="queue-item-size-tag">Ø ${item.visibleMm}/${item.cutMm} ${dict.mmUnit}</div>
-            <div class="queue-item-stepper">
-              <button type="button" class="queue-step-mini-btn dec-btn" title="${dict.cardDecreaseTooltip}">-</button>
-              <span class="queue-step-val">${item.count}</span>
-              <button type="button" class="queue-step-mini-btn inc-btn" title="${dict.cardIncreaseTooltip}">+</button>
+        if (state.queue.length === 0) {
+          targetContainer.innerHTML = `
+            <div class="queue-empty-placeholder" data-i18n="queueEmpty">
+              ${dict.queueEmpty}
             </div>
-          </div>
-          <button type="button" class="queue-del-btn" title="${dict.cardDeleteTooltip}">✕</button>
-        `;
+          `;
+          return;
+        }
 
-        // Card events
-        card.querySelector('.dec-btn').addEventListener('click', () => {
-          if (item.count > 1) {
-            item.count--;
-          } else {
+        targetContainer.innerHTML = '';
+        state.queue.forEach((item, index) => {
+          const card = document.createElement('div');
+          card.className = 'queue-item-card';
+          card.innerHTML = `
+            <div class="queue-thumb-wrap">
+              <img src="${item.thumbUrl}" alt="Badge preview" class="queue-thumb-img">
+            </div>
+            <div class="queue-item-meta">
+              <div class="queue-item-title" title="${item.name}">${item.name}</div>
+              <div class="queue-item-size-tag">Ø ${item.visibleMm}/${item.cutMm} ${dict.mmUnit}</div>
+              <div class="queue-item-stepper">
+                <button type="button" class="queue-step-mini-btn dec-btn" title="${dict.cardDecreaseTooltip}">-</button>
+                <span class="queue-step-val">${item.count}</span>
+                <button type="button" class="queue-step-mini-btn inc-btn" title="${dict.cardIncreaseTooltip}">+</button>
+              </div>
+            </div>
+            <button type="button" class="queue-del-btn" title="${dict.cardDeleteTooltip}">✕</button>
+          `;
+
+          // Card events
+          card.querySelector('.dec-btn').addEventListener('click', () => {
+            if (item.count > 1) {
+              item.count--;
+            } else {
+              state.queue.splice(index, 1);
+            }
+            renderQueueList();
+            saveState();
+            recalculatePackingAndRender();
+            triggerHaptic('light');
+          });
+
+          card.querySelector('.inc-btn').addEventListener('click', () => {
+            item.count++;
+            renderQueueList();
+            saveState();
+            recalculatePackingAndRender();
+            triggerHaptic('light');
+          });
+
+          card.querySelector('.queue-del-btn').addEventListener('click', () => {
             state.queue.splice(index, 1);
-          }
-          renderQueueList();
-          saveState();
-          recalculatePackingAndRender();
-        });
+            renderQueueList();
+            saveState();
+            recalculatePackingAndRender();
+            triggerHaptic('medium');
+          });
 
-        card.querySelector('.inc-btn').addEventListener('click', () => {
-          item.count++;
-          renderQueueList();
-          saveState();
-          recalculatePackingAndRender();
+          targetContainer.appendChild(card);
         });
+      };
 
-        card.querySelector('.queue-del-btn').addEventListener('click', () => {
-          state.queue.splice(index, 1);
-          renderQueueList();
-          saveState();
-          recalculatePackingAndRender();
-        });
-
-        container.appendChild(card);
-      });
+      renderInto(container);
+      renderInto(sheetContainer);
     }
 
     /* ========================================================================
@@ -3716,6 +3878,36 @@
         copiesInput.value = state.copies;
       });
 
+      // Discard current photo in cropper
+      const discardBtn = document.getElementById('discardPhotoBtn');
+      if (discardBtn) {
+        discardBtn.addEventListener('click', discardCurrentPhoto);
+      }
+
+      // Mobile back buttons
+      const sheetBackBtn = document.getElementById('sheetBackToEditorBtn');
+      if (sheetBackBtn) sheetBackBtn.addEventListener('click', () => switchMobileTab('editor'));
+
+      const queueBackBtn = document.getElementById('queueBackToEditorBtn');
+      if (queueBackBtn) queueBackBtn.addEventListener('click', () => switchMobileTab('editor'));
+
+      const queueGoToSheetBtn = document.getElementById('queueGoToSheetBtn');
+      if (queueGoToSheetBtn) queueGoToSheetBtn.addEventListener('click', () => switchMobileTab('sheet'));
+
+      // Sheet panel clear buttons
+      const sheetClearDocBtn = document.getElementById('sheetClearDocBtn');
+      if (sheetClearDocBtn) {
+        sheetClearDocBtn.addEventListener('click', () => {
+          if (state.queue.length > 0) document.getElementById('confirmModal').classList.add('open');
+        });
+      }
+      const sheetClearAllBtn = document.getElementById('sheetClearAllBtn');
+      if (sheetClearAllBtn) {
+        sheetClearAllBtn.addEventListener('click', () => {
+          if (state.queue.length > 0) document.getElementById('confirmModal').classList.add('open');
+        });
+      }
+
       // Add to sheet
       document.getElementById('addToSheetBtn').addEventListener('click', addBadgeToQueue);
 
@@ -3823,7 +4015,7 @@
       }
     }
 
-    function switchMobileTab(tabKey) {
+    function switchMobileTab(tabKey, pushHistory = true) {
       triggerHaptic('light');
 
       document.querySelectorAll('.mobile-nav-tab').forEach((tab) => {
@@ -3854,90 +4046,19 @@
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
 
-    function showToast(msg, actionText = null, actionCallback = null) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = 'toast-msg';
-
-      if (actionText && actionCallback) {
-        toast.style.display = 'flex';
-        toast.style.alignItems = 'center';
-        toast.style.justifyContent = 'space-between';
-        toast.style.gap = '0.75rem';
-
-        const textSpan = document.createElement('span');
-        textSpan.textContent = msg;
-        toast.appendChild(textSpan);
-
-        const actionBtn = document.createElement('button');
-        actionBtn.type = 'button';
-        actionBtn.style.background = 'var(--accent)';
-        actionBtn.style.color = '#fff';
-        actionBtn.style.border = 'none';
-        actionBtn.style.borderRadius = 'var(--radius-sm)';
-        actionBtn.style.padding = '0.3rem 0.6rem';
-        actionBtn.style.fontWeight = '700';
-        actionBtn.style.fontSize = '0.78rem';
-        actionBtn.style.cursor = 'pointer';
-        actionBtn.style.whiteSpace = 'nowrap';
-        actionBtn.textContent = actionText;
-        actionBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          actionCallback();
-          toast.remove();
-        });
-        toast.appendChild(actionBtn);
-      } else {
-        toast.textContent = msg;
-      }
-
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, actionText ? 5000 : 3000);
-    }
-
-    /* ========================================================================
-       14. SERVICE WORKER REGISTRATION (OFFLINE PWA)
-       ======================================================================== */
-    function registerServiceWorker() {
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then((reg) => console.log('PinPoint ServiceWorker registered:', reg.scope))
-            .catch((err) => console.log('ServiceWorker registration error:', err));
-        });
+      // Support Android hardware back button and iOS swipe back
+      if (pushHistory && window.history && window.history.pushState) {
+        try {
+          window.history.pushState({ tab: tabKey }, '', '#' + tabKey);
+        } catch (_) {}
       }
     }
 
-    /* ========================================================================
-       15. INITIALIZATION
-       ======================================================================== */
-    window.addEventListener('DOMContentLoaded', () => {
-      loadSavedState();
-      setLanguage(state.lang);
-      initCropperEvents();
-      initUIEvents();
-      renderQueueList();
-      recalculatePackingAndRender();
-      drawCropCanvas();
-      registerServiceWorker();
-
-      // Set initial orientation buttons
-      if (state.orientation === 'landscape') {
-        document.getElementById('orientLandBtn').classList.add('active');
-        document.getElementById('orientPortBtn').classList.remove('active');
-      } else {
-        document.getElementById('orientPortBtn').classList.add('active');
-        document.getElementById('orientLandBtn').classList.remove('active');
-      }
-      document.getElementById('marginInput').value = state.marginMm;
-      document.getElementById('gapInput').value = state.gapMm;
+    // Handle system back navigation (Android back button, iOS swipe)
+    window.addEventListener('popstate', (e) => {
+      const tab = (e.state && e.state.tab) || 'editor';
+      switchMobileTab(tab, false);
     });
-  </script>
-</body>
-</html>
+
+    
