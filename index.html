@@ -1598,6 +1598,154 @@
         size: auto;
       }
     }
+  
+    /* Mobile Top Segmented Navigation */
+    .mobile-top-nav {
+      display: none;
+    }
+    @media (max-width: 1023px) {
+      .mobile-top-nav {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 998;
+        background: rgba(11, 17, 32, 0.96);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border-subtle);
+        padding: 0.45rem 0.65rem;
+        gap: 0.45rem;
+      }
+      .mobile-top-tab {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-muted);
+        padding: 0.55rem 0.5rem;
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        position: relative;
+        transition: all var(--transition-fast);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .mobile-top-tab.active {
+        background: rgba(14, 165, 233, 0.22);
+        border-color: var(--accent);
+        color: #fff;
+        box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+      }
+      .mobile-top-tab .tab-badge-pill {
+        position: static;
+        margin-left: 0.25rem;
+      }
+    }
+
+    /* Editor Live Document Strip */
+    .editor-doc-strip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      margin-top: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .doc-strip-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .doc-strip-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .doc-strip-title strong {
+      color: var(--accent);
+    }
+    .doc-strip-view-btn {
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.4);
+      color: var(--accent-hover);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+    .doc-strip-view-btn:hover {
+      background: rgba(14, 165, 233, 0.25);
+    }
+    .doc-strip-thumbs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      scrollbar-width: thin;
+    }
+    .doc-strip-item {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.3rem 0.5rem;
+    }
+    .doc-strip-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border-subtle);
+      background: #000;
+    }
+    .doc-strip-info {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.7rem;
+      line-height: 1.2;
+    }
+    .doc-strip-size {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .doc-strip-count {
+      color: var(--text-muted);
+    }
+    .doc-strip-del {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.2rem 0.35rem;
+      font-size: 0.75rem;
+      line-height: 1;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast);
+    }
+    .doc-strip-del:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.15);
+    }
+
   </style>
 </head>
 <body>
@@ -1634,6 +1782,21 @@
       </div>
     </div>
   </header>
+
+  <!-- Mobile Top Segmented Navigation (Sticky on Mobile) -->
+  <nav class="mobile-top-nav" id="mobileTopNav">
+    <button type="button" class="mobile-top-tab active" data-tab="editor" id="topTabEditorBtn">
+      🎨 <span data-i18n="tabEditor">Редактор</span>
+    </button>
+    <button type="button" class="mobile-top-tab" data-tab="queue" id="topTabQueueBtn">
+      📋 <span data-i18n="tabQueue">Черга</span>
+      <span class="tab-badge-pill" id="topQueueBadge">0</span>
+    </button>
+    <button type="button" class="mobile-top-tab" data-tab="sheet" id="topTabSheetBtn">
+      🖨️ <span data-i18n="tabSheet">Аркуш</span>
+      <span class="tab-badge-pill" id="topSheetBadge">0</span>
+    </button>
+  </nav>
 
   <!-- ========================================================================
        MAIN DASHBOARD
@@ -1802,6 +1965,22 @@
           <button type="button" class="btn-primary-add" id="addToSheetBtn">
             ➕ <span data-i18n="addToSheet">Додати в лист</span>
           </button>
+        </div>
+
+        <!-- Live Document Badges Strip inside Editor -->
+        <div id="editorDocStrip" class="editor-doc-strip" style="display: none;">
+          <div class="doc-strip-header">
+            <span class="doc-strip-title">
+              📄 <span data-i18n="docStripTitle">Уже в документі:</span>
+              <strong id="editorDocCount">0 шт.</strong>
+            </span>
+            <button type="button" class="doc-strip-view-btn" id="editorViewSheetBtn">
+              <span data-i18n="docStripView">Переглянути аркуш</span> ➔
+            </button>
+          </div>
+          <div id="editorDocThumbList" class="doc-strip-thumbs">
+            <!-- Dynamically populated badge cards with mini thumbnail and quick delete -->
+          </div>
         </div>
       </div>
     </section>
@@ -2078,6 +2257,8 @@
         replacePhotoTooltip: "Замінити фото на інше",
         toastPhotoDiscarded: "Фото прибрано з редактора",
         docBadgesTitle: "Значки на аркуші:",
+        docStripTitle: "Уже в документі:",
+        docStripView: "Переглянути аркуш",
         clearDocBtn: "Очистити аркуш",
         clearModalTitle: "Очистити чергу?",
         clearConfirm: "Ви впевнені, що хочете видалити всі значки з черги?",
@@ -2207,6 +2388,8 @@
         replacePhotoTooltip: "Replace photo with another",
         toastPhotoDiscarded: "Photo discarded from editor",
         docBadgesTitle: "Badges on Sheet:",
+        docStripTitle: "In Document:",
+        docStripView: "View Sheet",
         clearDocBtn: "Clear Sheet",
         clearModalTitle: "Clear Queue?",
         clearConfirm: "Are you sure you want to remove all badges from the queue?",
@@ -3249,6 +3432,10 @@
     function renderQueueList() {
       const container = document.getElementById('queueListContainer');
       const sheetContainer = document.getElementById('sheetBadgesListContainer');
+      const editorDocStrip = document.getElementById('editorDocStrip');
+      const editorDocCount = document.getElementById('editorDocCount');
+      const editorDocThumbList = document.getElementById('editorDocThumbList');
+      const sheetContainer = document.getElementById('sheetBadgesListContainer');
       const countBadge = document.getElementById('queueCountBadge');
       const sheetDocCountBadge = document.getElementById('sheetDocCountBadge');
       const mobBadge = document.getElementById('mobileQueueBadge');
@@ -3259,6 +3446,44 @@
       if (countBadge) countBadge.textContent = countStr;
       if (sheetDocCountBadge) sheetDocCountBadge.textContent = countStr;
       if (mobBadge) mobBadge.textContent = totalBadges;
+
+      // Update badge pills on top and bottom tabs
+      const topQueueBadge = document.getElementById('topQueueBadge');
+      const topSheetBadge = document.getElementById('topSheetBadge');
+      if (topQueueBadge) topQueueBadge.textContent = totalBadges;
+      if (topSheetBadge) topSheetBadge.textContent = totalBadges;
+
+      // Update Editor Document Strip
+      if (editorDocStrip && editorDocCount && editorDocThumbList) {
+        if (state.queue.length > 0) {
+          editorDocStrip.style.display = 'flex';
+          editorDocCount.textContent = countStr;
+          editorDocThumbList.innerHTML = '';
+          state.queue.forEach((item, index) => {
+            const stripItem = document.createElement('div');
+            stripItem.className = 'doc-strip-item';
+            stripItem.innerHTML = `
+              <img src="${item.thumbUrl}" alt="Badge preview" class="doc-strip-thumb">
+              <div class="doc-strip-info">
+                <span class="doc-strip-size">Ø ${item.visibleMm}/${item.cutMm}</span>
+                <span class="doc-strip-count">× ${item.count}</span>
+              </div>
+              <button type="button" class="doc-strip-del" title="${dict.cardDeleteTooltip}">✕</button>
+            `;
+            stripItem.querySelector('.doc-strip-del').addEventListener('click', (e) => {
+              e.stopPropagation();
+              state.queue.splice(index, 1);
+              renderQueueList();
+              saveState();
+              recalculatePackingAndRender();
+              triggerHaptic('medium');
+            });
+            editorDocThumbList.appendChild(stripItem);
+          });
+        } else {
+          editorDocStrip.style.display = 'none';
+        }
+      }
 
       const renderInto = (targetContainer) => {
         if (!targetContainer) return;
@@ -3994,13 +4219,19 @@
       document.getElementById('downloadPdfBtn').addEventListener('click', downloadPdf);
       document.getElementById('printSheetBtn').addEventListener('click', printCurrentSheet);
 
-      // Mobile Bottom Navigation Tabs
-      document.querySelectorAll('.mobile-nav-tab').forEach((tab) => {
+      // Mobile Top & Bottom Navigation Tabs
+      document.querySelectorAll('.mobile-nav-tab, .mobile-top-tab').forEach((tab) => {
         tab.addEventListener('click', () => {
           const tabKey = tab.getAttribute('data-tab');
           switchMobileTab(tabKey);
         });
       });
+
+      // Editor document strip view sheet button
+      const editorViewSheetBtn = document.getElementById('editorViewSheetBtn');
+      if (editorViewSheetBtn) {
+        editorViewSheetBtn.addEventListener('click', () => switchMobileTab('sheet'));
+      }
 
 
     }
@@ -4019,11 +4250,10 @@
       triggerHaptic('light');
 
       document.querySelectorAll('.mobile-nav-tab').forEach((tab) => {
-        if (tab.getAttribute('data-tab') === tabKey) {
-          tab.classList.add('active');
-        } else {
-          tab.classList.remove('active');
-        }
+        tab.classList.toggle('active', tab.getAttribute('data-tab') === tabKey);
+      });
+      document.querySelectorAll('.mobile-top-tab').forEach((tab) => {
+        tab.classList.toggle('active', tab.getAttribute('data-tab') === tabKey);
       });
 
       const editorPanel = document.getElementById('editorPanel');
