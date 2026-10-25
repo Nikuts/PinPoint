@@ -445,7 +445,7 @@
       .copies-stepper {
         height: 48px !important;
       }
-      .btn-primary-add, .btn-download-pdf, .btn-quick-print, .file-select-btn {
+      .btn-primary-add, .btn-download-pdf, .btn-download-img, .btn-quick-print, .file-select-btn {
         min-height: 48px !important;
       }
       .preset-chip-btn {
@@ -1475,6 +1475,37 @@
       filter: none;
     }
 
+    .btn-download-img {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.25rem;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35);
+      transition: all var(--transition-fast);
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .btn-download-img:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    .btn-download-img:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
+
     .btn-quick-print {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
@@ -2103,8 +2134,11 @@
             <button type="button" id="downloadPdfBtn" class="btn-download-pdf">
               📥 <span data-i18n="downloadPdf">Завантажити PDF (300 DPI)</span>
             </button>
+            <button type="button" id="downloadImageBtn" class="btn-download-img">
+              🖼️ <span data-i18n="downloadImage">Зберегти PNG (300 DPI)</span>
+            </button>
             <button type="button" id="printSheetBtn" class="btn-quick-print">
-              🖨 <span data-i18n="printSheet">Швидкий друк</span>
+              🖨️ <span data-i18n="printSheet">Швидкий друк</span>
             </button>
           </div>
 
@@ -2265,8 +2299,10 @@
         nextPageTooltip: "Наступна сторінка",
         placedStats: "Розміщено {placed} з {total} шт. ({sheets} арк.)",
         downloadPdf: "Завантажити PDF (300 DPI)",
+        downloadImage: "Зберегти PNG (300 DPI)",
         printSheet: "Швидкий друк",
         generatingPdf: "Генерація PDF (300 DPI)...",
+        generatingImage: "Генерація PNG (300 DPI)...",
         printAlert: "Важливо: у налаштуваннях друку оберіть «Реальний розмір» або 100% масштаб без полів!",
         
         // Mobile navigation
@@ -2291,6 +2327,7 @@
         toastNeedImage: "Спочатку завантажте зображення!",
         toastKeepOneFav: "Залиште хоча б один обраний формат",
         toastPdfSuccess: "PDF файл успішно створено!",
+        toastImageSuccess: "Зображення аркуша (PNG 300 DPI) успішно збережено!",
         toastJsPdfLoading: "Бібліотека jsPDF завантажується... Будь ласка, зачекайте",
         toastPdfError: "Помилка створення PDF: ",
         filePrefix: "PinBadges"
@@ -2396,8 +2433,10 @@
         nextPageTooltip: "Next page",
         placedStats: "Placed {placed} of {total} pcs ({sheets} sheet(s))",
         downloadPdf: "Download PDF (300 DPI)",
+        downloadImage: "Download PNG (300 DPI)",
         printSheet: "Print Sheet",
         generatingPdf: "Generating PDF (300 DPI)...",
+        generatingImage: "Generating PNG (300 DPI)...",
         printAlert: "Important: in print settings choose 'Actual Size' or 100% scale without margins!",
         
         // Mobile navigation
@@ -2422,6 +2461,7 @@
         toastNeedImage: "Please load an image first!",
         toastKeepOneFav: "Keep at least one favorite format",
         toastPdfSuccess: "PDF file downloaded successfully!",
+        toastImageSuccess: "Sheet image (PNG 300 DPI) saved successfully!",
         toastJsPdfLoading: "jsPDF library loading... Please try again in a moment",
         toastPdfError: "Error generating PDF: ",
         filePrefix: "PinBadges"
@@ -3733,6 +3773,8 @@
 
       // Disable export if queue is empty
       document.getElementById('downloadPdfBtn').disabled = placedItems === 0;
+      const dlImgBtn = document.getElementById('downloadImageBtn');
+      if (dlImgBtn) dlImgBtn.disabled = placedItems === 0;
       document.getElementById('printSheetBtn').disabled = placedItems === 0;
     }
 
@@ -3916,6 +3958,149 @@
       } finally {
         dlBtn.disabled = false;
         dlBtn.innerHTML = originalText;
+      }
+    }
+
+    /* ========================================================================
+       11b. HIGH-RES 300 DPI SHEET IMAGE EXPORT (PNG)
+       ======================================================================== */
+    async function downloadSheetImage() {
+      if (state.packedPages.length === 0) return;
+
+      const dlImgBtn = document.getElementById('downloadImageBtn');
+      const originalText = dlImgBtn.innerHTML;
+      dlImgBtn.disabled = true;
+      dlImgBtn.innerHTML = `⏳ <span>${state.lang === 'uk' ? I18N.uk.generatingImage : I18N.en.generatingImage}</span>`;
+
+      try {
+        const paper = getEffectivePaperDimensions();
+        // Exact 300 DPI: 300 / 25.4 px per mm
+        const pxPerMm = 300 / 25.4;
+        const targetW = Math.round(paper.w * pxPerMm);
+        const targetH = Math.round(paper.h * pxPerMm);
+
+        const loadImagePromise = (url) => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = url;
+          });
+        };
+
+        const totalBadges = state.queue.reduce((acc, it) => acc + it.count, 0);
+
+        for (let pIdx = 0; pIdx < state.packedPages.length; pIdx++) {
+          const pageBadges = state.packedPages[pIdx];
+
+          const offCanvas = document.createElement('canvas');
+          offCanvas.width = targetW;
+          offCanvas.height = targetH;
+          const ctx = offCanvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+
+          // 1. Pure white background
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, targetW, targetH);
+
+          // 2. Faint printable margin boundary guide
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(
+            state.marginMm * pxPerMm,
+            state.marginMm * pxPerMm,
+            (paper.w - 2 * state.marginMm) * pxPerMm,
+            (paper.h - 2 * state.marginMm) * pxPerMm
+          );
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+          ctx.lineWidth = 1.0;
+          ctx.setLineDash([8, 8]);
+          ctx.stroke();
+          ctx.restore();
+
+          // 3. Pre-load all badge images for this page in parallel
+          const badgeImages = await Promise.all(
+            pageBadges.map((b) => (b.highResUrl ? loadImagePromise(b.highResUrl) : Promise.resolve(null)))
+          );
+
+          // 4. Render each badge and its vector guidelines
+          pageBadges.forEach((badge, idx) => {
+            const cx = badge.x * pxPerMm;
+            const cy = badge.y * pxPerMm;
+            const cutRadiusPx = badge.radius * pxPerMm;
+            const faceRadiusPx = (badge.visibleMm / 2) * pxPerMm;
+            const img = badgeImages[idx];
+
+            if (img) {
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(cx, cy, cutRadiusPx, 0, Math.PI * 2);
+              ctx.clip();
+              ctx.drawImage(img, cx - cutRadiusPx, cy - cutRadiusPx, cutRadiusPx * 2, cutRadiusPx * 2);
+              ctx.restore();
+            }
+
+            // Outer cut line (gray #b0b0b0, ~0.15mm)
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, cutRadiusPx, 0, Math.PI * 2);
+            ctx.strokeStyle = '#b0b0b0';
+            ctx.lineWidth = Math.max(1.5, 0.15 * pxPerMm);
+            ctx.stroke();
+            ctx.restore();
+
+            // Inner visible face guide (dashed cyan line)
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, faceRadiusPx, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(14, 165, 233, 0.85)';
+            ctx.lineWidth = Math.max(1.2, 0.12 * pxPerMm);
+            ctx.setLineDash([Math.round(4 * pxPerMm / 4), Math.round(4 * pxPerMm / 4)]);
+            ctx.stroke();
+            ctx.restore();
+
+            // Top 12 o'clock notch tick (1.5mm outside to 1.2mm inside)
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - cutRadiusPx - (1.5 * pxPerMm));
+            ctx.lineTo(cx, cy - cutRadiusPx + (1.2 * pxPerMm));
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = Math.max(1.8, 0.2 * pxPerMm);
+            ctx.stroke();
+            ctx.restore();
+          });
+
+          // 5. Trigger download as PNG Blob
+          await new Promise((resolve) => {
+            offCanvas.toBlob((blob) => {
+              if (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const pageSuffix = state.packedPages.length > 1 ? `_p${pIdx + 1}` : '';
+                a.download = `${I18N[state.lang].filePrefix}_${state.paperKey}_${totalBadges}${I18N[state.lang].pcsUnit}${pageSuffix}.png`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                  resolve();
+                }, 400);
+              } else {
+                resolve();
+              }
+            }, 'image/png');
+          });
+        }
+
+        showToast(I18N[state.lang].toastImageSuccess);
+      } catch (err) {
+        console.error('Image export error:', err);
+        showToast('Помилка збереження зображення: ' + err.message);
+      } finally {
+        dlImgBtn.disabled = false;
+        dlImgBtn.innerHTML = originalText;
       }
     }
 
@@ -4207,6 +4392,8 @@
 
       // Export buttons
       document.getElementById('downloadPdfBtn').addEventListener('click', downloadPdf);
+      const dlImgBtn = document.getElementById('downloadImageBtn');
+      if (dlImgBtn) dlImgBtn.addEventListener('click', downloadSheetImage);
       document.getElementById('printSheetBtn').addEventListener('click', printCurrentSheet);
 
       // Mobile Bottom Navigation Tabs
