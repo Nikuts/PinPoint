@@ -253,15 +253,20 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(15, 23, 42, 0.98);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-top: 1px solid var(--border-subtle);
-      padding: 0.4rem 0.5rem max(0.4rem, env(safe-area-inset-bottom));
-      z-index: 1000;
+      padding: 0.45rem 0.5rem;
+      padding-bottom: max(0.6rem, env(safe-area-inset-bottom));
+      padding-left: max(0.5rem, env(safe-area-inset-left));
+      padding-right: max(0.5rem, env(safe-area-inset-right));
+      z-index: 9999 !important;
       justify-content: space-around;
       gap: 0.4rem;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.7);
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
 
     .mobile-nav-tab {
@@ -269,28 +274,35 @@
       background: none;
       border: 1px solid transparent;
       color: var(--text-muted);
-      padding: 0.4rem 0.2rem;
+      padding: 0.45rem 0.2rem;
       border-radius: var(--radius-md);
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 0.2rem;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 700;
       cursor: pointer;
       position: relative;
       transition: all var(--transition-fast);
       -webkit-tap-highlight-color: transparent;
-      min-height: 48px;
+      touch-action: manipulation;
+      min-height: 52px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .mobile-nav-tab * {
+      pointer-events: none;
     }
     .mobile-nav-tab .tab-icon {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       line-height: 1;
     }
     .mobile-nav-tab.active {
       color: var(--accent-hover);
-      background: rgba(14, 165, 233, 0.15);
-      border-color: rgba(14, 165, 233, 0.35);
+      background: rgba(14, 165, 233, 0.18);
+      border-color: rgba(14, 165, 233, 0.45);
     }
 
     .tab-badge-pill {
@@ -388,7 +400,7 @@
 
     @media (max-width: 1023px) {
       body {
-        padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 84px) !important;
       }
       .mobile-nav-bar {
         display: flex !important;
@@ -886,12 +898,19 @@
       border: 1px solid var(--border-subtle);
       color: var(--text-muted);
       border-radius: var(--radius-sm);
-      padding: 0.25rem 0.5rem;
-      font-size: 0.72rem;
+      padding: 0.3rem 0.55rem;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       transition: all var(--transition-fast);
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .mini-action-btn:hover {
       background: var(--bg-card-hover);
@@ -981,11 +1000,15 @@
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
       transition: all var(--transition-fast);
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .file-select-btn:hover {
       background: var(--bg-card-hover);
@@ -1569,9 +1592,19 @@
       50% { opacity: 1; transform: scale(1.06); }
     }
 
-    /* Hidden File Input */
-    #fileInput {
-      display: none;
+    /* Accessible Off-Screen File Inputs (Rendered in DOM, never display: none, 100% iOS & Android compatible) */
+    .visually-hidden-file-input {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+      opacity: 0.001 !important;
+      pointer-events: none !important;
     }
 
     /* Print Specific Media */
@@ -1596,53 +1629,6 @@
       @page {
         margin: 0;
         size: auto;
-      }
-    }
-  
-    /* Mobile Top Segmented Navigation */
-    .mobile-top-nav {
-      display: none;
-    }
-    @media (max-width: 1023px) {
-      .mobile-top-nav {
-        display: flex;
-        position: sticky;
-        top: 0;
-        z-index: 998;
-        background: rgba(11, 17, 32, 0.96);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border-bottom: 1px solid var(--border-subtle);
-        padding: 0.45rem 0.65rem;
-        gap: 0.45rem;
-      }
-      .mobile-top-tab {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        padding: 0.55rem 0.5rem;
-        border-radius: var(--radius-md);
-        font-size: 0.8rem;
-        font-weight: 700;
-        cursor: pointer;
-        position: relative;
-        transition: all var(--transition-fast);
-        -webkit-tap-highlight-color: transparent;
-      }
-      .mobile-top-tab.active {
-        background: rgba(14, 165, 233, 0.22);
-        border-color: var(--accent);
-        color: #fff;
-        box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
-      }
-      .mobile-top-tab .tab-badge-pill {
-        position: static;
-        margin-left: 0.25rem;
       }
     }
 
@@ -1783,21 +1769,6 @@
     </div>
   </header>
 
-  <!-- Mobile Top Segmented Navigation (Sticky on Mobile) -->
-  <nav class="mobile-top-nav" id="mobileTopNav">
-    <button type="button" class="mobile-top-tab active" data-tab="editor" id="topTabEditorBtn">
-      🎨 <span data-i18n="tabEditor">Редактор</span>
-    </button>
-    <button type="button" class="mobile-top-tab" data-tab="queue" id="topTabQueueBtn">
-      📋 <span data-i18n="tabQueue">Черга</span>
-      <span class="tab-badge-pill" id="topQueueBadge">0</span>
-    </button>
-    <button type="button" class="mobile-top-tab" data-tab="sheet" id="topTabSheetBtn">
-      🖨️ <span data-i18n="tabSheet">Аркуш</span>
-      <span class="tab-badge-pill" id="topSheetBadge">0</span>
-    </button>
-  </nav>
-
   <!-- ========================================================================
        MAIN DASHBOARD
        ======================================================================== -->
@@ -1867,12 +1838,12 @@
             Перетягніть фото сюди або вставте з буфера (Ctrl+V)
           </div>
           <div class="file-buttons-row">
-            <button type="button" class="file-select-btn gallery-main-btn" id="browsePhotoBtn">
+            <label for="fileInput" class="file-select-btn gallery-main-btn" id="browsePhotoBtn">
               📁 <span data-i18n="galleryBtn">Галерея</span>
-            </button>
-            <button type="button" class="file-select-btn camera-btn" id="cameraPhotoBtn">
+            </label>
+            <label for="cameraInput" class="file-select-btn camera-btn" id="cameraPhotoBtn">
               📷 <span data-i18n="cameraBtn">Камера</span>
-            </button>
+            </label>
           </div>
         </div>
 
@@ -1920,9 +1891,9 @@
         </div>
       </div>
 
-      <!-- Hidden file & camera inputs -->
-      <input type="file" id="fileInput" accept="image/*, .png, .jpg, .jpeg, .webp, .svg, .bmp, .gif">
-      <input type="file" id="cameraInput" accept="image/*" capture="environment">
+      <!-- Accessible off-screen file & camera inputs -->
+      <input type="file" id="fileInput" class="visually-hidden-file-input" accept="image/*">
+      <input type="file" id="cameraInput" class="visually-hidden-file-input" accept="image/*" capture="environment">
 
       <!-- Cropper Manipulator Controls -->
       <div class="cropper-controls">
@@ -1947,9 +1918,9 @@
           <button type="button" class="mini-action-btn" id="centerImgBtn" data-i18n-title="centerImgTooltip" title="Вирівняти фото по центру">
             🎯 <span data-i18n="centerImg">Центрувати</span>
           </button>
-          <button type="button" class="mini-action-btn" id="replaceImgBtn" data-i18n-title="replacePhotoTooltip" title="Замінити фото на інше">
+          <label for="fileInput" class="mini-action-btn" id="replaceImgBtn" data-i18n-title="replacePhotoTooltip" title="Замінити фото на інше">
             🔄 <span data-i18n="replacePhoto">Замінити</span>
-          </button>
+          </label>
           <button type="button" class="mini-action-btn btn-danger-subtle" id="discardPhotoBtn" data-i18n-title="discardPhotoTooltip" title="Прибрати це фото">
             🗑️ <span data-i18n="discardPhoto">Прибрати</span>
           </button>
@@ -2162,6 +2133,7 @@
     <button type="button" class="mobile-nav-tab" data-tab="sheet" id="tabSheetBtn">
       <span class="tab-icon">🖨️</span>
       <span class="tab-text" data-i18n="tabSheet">Аркуш</span>
+      <span class="tab-badge-pill" id="mobileSheetBadge" style="display: none;">0</span>
     </button>
   </nav>
 
@@ -2867,10 +2839,12 @@
     let initialImgX = 0;
     let initialImgY = 0;
 
+    const CROP_LOGICAL_SIZE = 440;
+
     function getCanvasCoords(clientX, clientY) {
       const rect = cropCanvas.getBoundingClientRect();
-      const x = (clientX - rect.left) * (cropCanvas.width / rect.width);
-      const y = (clientY - rect.top) * (cropCanvas.height / rect.height);
+      const x = (clientX - rect.left) * (CROP_LOGICAL_SIZE / rect.width);
+      const y = (clientY - rect.top) * (CROP_LOGICAL_SIZE / rect.height);
       return { x, y };
     }
 
@@ -2885,8 +2859,8 @@
         activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
         const coords = getCanvasCoords(e.clientX, e.clientY);
-        const cx = cropCanvas.width / 2;
-        const cy = cropCanvas.height / 2;
+        const cx = CROP_LOGICAL_SIZE / 2;
+        const cy = CROP_LOGICAL_SIZE / 2;
         const distFromCenter = Math.hypot(coords.x - cx, coords.y - cy);
         
         // 12 o'clock rotation knob center is (cx, cy - 175 - 20)
@@ -2935,8 +2909,8 @@
 
       cropCanvas.addEventListener('pointermove', (e) => {
         const coords = getCanvasCoords(e.clientX, e.clientY);
-        const cx = cropCanvas.width / 2;
-        const cy = cropCanvas.height / 2;
+        const cx = CROP_LOGICAL_SIZE / 2;
+        const cy = CROP_LOGICAL_SIZE / 2;
 
         if (activePointers.has(e.pointerId)) {
           activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -3007,8 +2981,8 @@
       });
 
       function updateCursorStyle(canvasX, canvasY) {
-        const cx = cropCanvas.width / 2;
-        const cy = cropCanvas.height / 2;
+        const cx = CROP_LOGICAL_SIZE / 2;
+        const cy = CROP_LOGICAL_SIZE / 2;
         const dist = Math.hypot(canvasX - cx, canvasY - cy);
         const knobDist = Math.hypot(canvasX - cx, canvasY - (cy - 175 - 20));
 
@@ -3146,8 +3120,23 @@
     }
 
     function drawCropCanvas() {
-      const w = cropCanvas.width;
-      const h = cropCanvas.height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 3);
+      const logicalSize = CROP_CANVAS_LOGICAL_SIZE;
+      const targetW = Math.round(logicalSize * dpr);
+      const targetH = Math.round(logicalSize * dpr);
+
+      if (cropCanvas.width !== targetW || cropCanvas.height !== targetH) {
+        cropCanvas.width = targetW;
+        cropCanvas.height = targetH;
+      }
+
+      cropCtx.save();
+      cropCtx.scale(dpr, dpr);
+      cropCtx.imageSmoothingEnabled = true;
+      cropCtx.imageSmoothingQuality = 'high';
+
+      const w = logicalSize;
+      const h = logicalSize;
       const cx = w / 2;
       const cy = h / 2;
       cropCtx.clearRect(0, 0, w, h);
@@ -3171,11 +3160,13 @@
         cropCtx.translate(cx + state.imgX, cy + state.imgY);
         cropCtx.rotate((state.rotation * Math.PI) / 180);
 
-        // Calculate base scale to fill the cut circle nicely
-        const baseScale = (cutRadiusPx * 2) / Math.min(state.image.width, state.image.height);
+        // Calculate base scale to fill the cut circle nicely using natural source resolution
+        const natW = state.image.naturalWidth || state.image.width;
+        const natH = state.image.naturalHeight || state.image.height;
+        const baseScale = (cutRadiusPx * 2) / Math.min(natW, natH);
         const totalScale = baseScale * state.zoom;
-        const dw = state.image.width * totalScale;
-        const dh = state.image.height * totalScale;
+        const dw = natW * totalScale;
+        const dh = natH * totalScale;
 
         cropCtx.drawImage(state.image, -dw / 2, -dh / 2, dw, dh);
         cropCtx.restore();
@@ -3299,6 +3290,9 @@
       cropCtx.lineWidth = 1.2;
       cropCtx.stroke();
       cropCtx.restore();
+
+      // Restore outer HiDPI scale
+      cropCtx.restore();
     }
 
     function updateZoomUI() {
@@ -3317,9 +3311,16 @@
     function generateHighResBadgeDataUrl(cutMm, visibleMm) {
       if (!state.image) return null;
 
-      // 300 DPI: 1 inch = 25.4 mm => 300 / 25.4 = 11.81102 px/mm
-      const pxMmRatio = 300 / 25.4;
-      const targetSizePx = Math.round(cutMm * pxMmRatio); // e.g. 70 * 11.811 = 827px
+      // Minimum 300 DPI baseline (300 / 25.4 = ~11.81102 px/mm)
+      const minDpiPx = Math.round(cutMm * (300 / 25.4)); // e.g. 70mm -> 827px
+
+      // Use natural source resolution of the image to guarantee zero quality reduction
+      const natW = state.image.naturalWidth || state.image.width || 1000;
+      const natH = state.image.naturalHeight || state.image.height || 1000;
+      const effectiveNativePx = Math.round(Math.min(natW, natH) * state.zoom);
+
+      // Preserve native source detail up to 2400px (~870 DPI for 70mm), lossless PNG
+      const targetSizePx = Math.max(minDpiPx, Math.min(2400, effectiveNativePx));
 
       const offCanvas = document.createElement('canvas');
       offCanvas.width = targetSizePx;
@@ -3345,10 +3346,10 @@
       offCtx.translate(cx + imgXTarget, cy + imgYTarget);
       offCtx.rotate((state.rotation * Math.PI) / 180);
 
-      const baseScale = targetSizePx / Math.min(state.image.width, state.image.height);
+      const baseScale = targetSizePx / Math.min(natW, natH);
       const totalScale = baseScale * state.zoom;
-      const dw = state.image.width * totalScale;
-      const dh = state.image.height * totalScale;
+      const dw = natW * totalScale;
+      const dh = natH * totalScale;
 
       offCtx.drawImage(state.image, -dw / 2, -dh / 2, dw, dh);
       offCtx.restore();
@@ -3435,7 +3436,6 @@
       const editorDocStrip = document.getElementById('editorDocStrip');
       const editorDocCount = document.getElementById('editorDocCount');
       const editorDocThumbList = document.getElementById('editorDocThumbList');
-      const sheetContainer = document.getElementById('sheetBadgesListContainer');
       const countBadge = document.getElementById('queueCountBadge');
       const sheetDocCountBadge = document.getElementById('sheetDocCountBadge');
       const mobBadge = document.getElementById('mobileQueueBadge');
@@ -3447,11 +3447,12 @@
       if (sheetDocCountBadge) sheetDocCountBadge.textContent = countStr;
       if (mobBadge) mobBadge.textContent = totalBadges;
 
-      // Update badge pills on top and bottom tabs
-      const topQueueBadge = document.getElementById('topQueueBadge');
-      const topSheetBadge = document.getElementById('topSheetBadge');
-      if (topQueueBadge) topQueueBadge.textContent = totalBadges;
-      if (topSheetBadge) topSheetBadge.textContent = totalBadges;
+      // Update badge pills on mobile bottom navigation tabs
+      const mobSheetBadge = document.getElementById('mobileSheetBadge');
+      if (mobSheetBadge) {
+        mobSheetBadge.textContent = totalBadges;
+        mobSheetBadge.style.display = totalBadges > 0 ? 'inline-block' : 'none';
+      }
 
       // Update Editor Document Strip
       if (editorDocStrip && editorDocCount && editorDocThumbList) {
@@ -3745,11 +3746,13 @@
       const paper = getEffectivePaperDimensions();
       const aspectRatio = paper.w / paper.h;
 
-      // Base canvas resolution: 1400px high
-      const canvasH = 1400;
+      // Base canvas resolution: 2000px high for ultra-crisp display & browser print
+      const canvasH = 2000;
       const canvasW = Math.round(canvasH * aspectRatio);
       sheetCanvas.width = canvasW;
       sheetCanvas.height = canvasH;
+      sheetCtx.imageSmoothingEnabled = true;
+      sheetCtx.imageSmoothingQuality = 'high';
 
       // Scale factor: canvas pixels per millimeter
       const pxPerMm = canvasW / paper.w;
@@ -3886,9 +3889,9 @@
             const y = badge.y - R;
             const d = badge.cutMm;
 
-            // Draw 300 DPI raster circle
+            // Draw lossless raster badge at full original resolution
             if (badge.highResUrl) {
-              doc.addImage(badge.highResUrl, 'PNG', x, y, d, d, undefined, 'FAST');
+              doc.addImage(badge.highResUrl, 'PNG', x, y, d, d, undefined, 'NONE');
             }
 
             // Draw vector cut line (0.15mm, gray #b0b0b0)
@@ -3997,55 +4000,42 @@
         drawCropCanvas();
       });
 
-      // File browse & camera buttons
+      // File browse & camera inputs
       const fileInput = document.getElementById('fileInput');
       const cameraInput = document.getElementById('cameraInput');
       const emptyOverlay = document.getElementById('canvasEmptyOverlay');
       const browsePhotoBtn = document.getElementById('browsePhotoBtn');
       const replaceImgBtn = document.getElementById('replaceImgBtn');
-      const cameraBtn = document.getElementById('cameraBtn');
       const cameraPhotoBtn = document.getElementById('cameraPhotoBtn');
 
-      // Helper to open file picker (Gallery on mobile / Explorer on PC)
-      const openGalleryPicker = (e) => {
-        if (e) e.stopPropagation();
-        triggerHaptic('light');
-        fileInput.value = ''; // Reset so selecting the same file triggers change
-        fileInput.click();
-      };
+      // Native label clicks trigger the inputs synchronously on mobile & desktop.
+      // Light haptic feedback on touch:
+      if (browsePhotoBtn) browsePhotoBtn.addEventListener('pointerdown', () => triggerHaptic('light'));
+      if (cameraPhotoBtn) cameraPhotoBtn.addEventListener('pointerdown', () => triggerHaptic('light'));
+      if (replaceImgBtn) replaceImgBtn.addEventListener('pointerdown', () => triggerHaptic('light'));
 
-      // Helper to open camera
-      const openCameraPicker = (e) => {
-        if (e) e.stopPropagation();
-        triggerHaptic('light');
-        cameraInput.value = ''; // Reset
-        cameraInput.click();
-      };
-
-      if (browsePhotoBtn) browsePhotoBtn.addEventListener('click', openGalleryPicker);
-      if (replaceImgBtn) replaceImgBtn.addEventListener('click', openGalleryPicker);
-
-      // Clicking anywhere on the empty canvas overlay (except camera button) triggers gallery/explorer
+      // Clicking anywhere on the empty canvas overlay (except the action buttons) triggers the file input
       if (emptyOverlay) {
         emptyOverlay.addEventListener('click', (e) => {
-          if (e.target.closest('#cameraPhotoBtn')) return;
-          openGalleryPicker(e);
+          if (e.target.closest('#browsePhotoBtn') || e.target.closest('#cameraPhotoBtn')) return;
+          triggerHaptic('light');
+          fileInput.click();
         });
       }
-
-      if (cameraBtn) cameraBtn.addEventListener('click', openCameraPicker);
-      if (cameraPhotoBtn) cameraPhotoBtn.addEventListener('click', openCameraPicker);
 
       fileInput.addEventListener('change', (e) => {
         if (e.target.files && e.target.files[0]) {
           loadImageFile(e.target.files[0]);
         }
+        fileInput.value = '';
       });
+
       if (cameraInput) {
         cameraInput.addEventListener('change', (e) => {
           if (e.target.files && e.target.files[0]) {
             loadImageFile(e.target.files[0]);
           }
+          cameraInput.value = '';
         });
       }
 
@@ -4219,21 +4209,31 @@
       document.getElementById('downloadPdfBtn').addEventListener('click', downloadPdf);
       document.getElementById('printSheetBtn').addEventListener('click', printCurrentSheet);
 
-      // Mobile Top & Bottom Navigation Tabs
-      document.querySelectorAll('.mobile-nav-tab, .mobile-top-tab').forEach((tab) => {
-        tab.addEventListener('click', () => {
+      // Mobile Bottom Navigation Tabs
+      document.querySelectorAll('.mobile-nav-tab').forEach((tab) => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
           const tabKey = tab.getAttribute('data-tab');
           switchMobileTab(tabKey);
         });
       });
+
+      // Register Service Worker for offline PWA capabilities
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').then((reg) => {
+            reg.update();
+          }).catch((err) => {
+            console.warn('SW registration failed:', err);
+          });
+        });
+      }
 
       // Editor document strip view sheet button
       const editorViewSheetBtn = document.getElementById('editorViewSheetBtn');
       if (editorViewSheetBtn) {
         editorViewSheetBtn.addEventListener('click', () => switchMobileTab('sheet'));
       }
-
-
     }
 
     function triggerHaptic(type = 'light') {
@@ -4250,9 +4250,6 @@
       triggerHaptic('light');
 
       document.querySelectorAll('.mobile-nav-tab').forEach((tab) => {
-        tab.classList.toggle('active', tab.getAttribute('data-tab') === tabKey);
-      });
-      document.querySelectorAll('.mobile-top-tab').forEach((tab) => {
         tab.classList.toggle('active', tab.getAttribute('data-tab') === tabKey);
       });
 
@@ -4290,5 +4287,39 @@
       const tab = (e.state && e.state.tab) || 'editor';
       switchMobileTab(tab, false);
     });
+
+    /* ========================================================================
+       15. INITIALIZATION
+       ======================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      setLanguage(state.lang);
+      initCropperEvents();
+      initUIEvents();
+      renderQueueList();
+      recalculatePackingAndRender();
+      drawCropCanvas();
+
+      // Set initial orientation buttons
+      const portBtn = document.getElementById('orientPortBtn');
+      const landBtn = document.getElementById('orientLandBtn');
+      if (portBtn && landBtn) {
+        if (state.orientation === 'landscape') {
+          landBtn.classList.add('active');
+          portBtn.classList.remove('active');
+        } else {
+          portBtn.classList.add('active');
+          landBtn.classList.remove('active');
+        }
+      }
+
+      const marginInput = document.getElementById('marginInput');
+      if (marginInput) marginInput.value = state.marginMm;
+      const gapInput = document.getElementById('gapInput');
+      if (gapInput) gapInput.value = state.gapMm;
+    });
+  </script>
+</body>
+</html>
 
     

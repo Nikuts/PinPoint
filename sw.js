@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pinpoint-v7';
+const CACHE_NAME = 'pinpoint-v8';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -35,23 +35,42 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (request.method !== 'GET') return;
 
+  const url = new URL(request.url);
+
+  // Network-First for navigation / HTML documents to guarantee immediate UI updates on mobile & desktop
+  if (request.mode === 'navigate' || request.destination === 'document' || url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(request).then((cached) => cached || caches.match('./index.html'));
+        })
+    );
+    return;
+  }
+
+  // Cache-First with background revalidation for static assets (js, svg, fonts)
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Return cached version immediately, but revalidate in background if online
         fetch(request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(request, networkResponse.clone());
             });
           }
-        }).catch(() => {
-          // Offline, cached version is already returned
-        });
+        }).catch(() => {});
         return cachedResponse;
       }
 
-      // Not in cache, try network
       return fetch(request).then((networkResponse) => {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type === 'opaque') {
           return networkResponse;
@@ -64,7 +83,6 @@ self.addEventListener('fetch', (event) => {
 
         return networkResponse;
       }).catch(() => {
-        // Fallback for navigation requests when offline
         if (request.mode === 'navigate') {
           return caches.match('./index.html');
         }
