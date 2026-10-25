@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pinpoint-v10';
+const CACHE_NAME = 'pinpoint-v11';
 const PRECACHE_ASSETS = [
   './',
   './index.html',

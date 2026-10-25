@@ -235,16 +235,11 @@
       max-width: 1720px;
       width: 100%;
       margin: 0 auto;
-      padding: 1.25rem;
+      padding: 1.5rem;
       display: grid;
-      grid-template-columns: minmax(360px, 450px) 1fr;
-      gap: 1.25rem;
-    }
-
-    .desktop-right-col {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
+      grid-template-columns: minmax(380px, 460px) 1fr;
+      gap: 1.5rem;
+      align-items: start;
     }
 
     /* Mobile Bottom Navigation Bar */
@@ -410,9 +405,7 @@
         display: block;
         padding: 0.65rem;
       }
-      .desktop-right-col {
-        display: contents;
-      }
+      /* 2-pane clean mobile view */
       .mobile-tab-content {
         display: none !important;
       }
@@ -427,7 +420,7 @@
         display: none !important;
       }
       #sheetDocBadgesCard {
-        display: none !important;
+        display: flex !important;
       }
     }
 
@@ -1802,25 +1795,29 @@
   </header>
 
   <!-- ========================================================================
-       MAIN DASHBOARD
+       MAIN DASHBOARD (2-PANE STUDIO: EDITOR & SHEET)
        ======================================================================== -->
   <main>
-    <!-- LEFT COLUMN: BADGE CREATOR & CROPPER -->
+    <!-- 1. LEFT COLUMN: BADGE CREATOR & CROPPER -->
     <section id="editorPanel" class="dashboard-panel mobile-tab-content mobile-active">
       <div class="panel-header">
         <h2 class="panel-title">
-          <span data-i18n="navEditor">Редактор макета</span>
+          ✂️ <span data-i18n="navEditor">Редактор значка</span>
         </h2>
         <span class="panel-title-badge" id="currentPresetBadge">Ø 58/70 мм</span>
       </div>
 
-      <!-- Badge Sizing Presets (VEVOR & Buttons) -->
+      <!-- Badge Sizing Presets (VEVOR & Standard Dies) -->
       <div class="preset-selector-group">
         <label class="form-label" data-i18n="badgeSizeHeading">Розмір значка (прес):</label>
         <div class="preset-chips-row">
           <button type="button" class="preset-chip-btn active" data-preset="58">
             <span id="chipTitle58">58 мм</span>
             <span class="chip-sub" id="chipSub58">Різ 70 мм</span>
+          </button>
+          <button type="button" class="preset-chip-btn" data-preset="44">
+            <span id="chipTitle44">44 мм</span>
+            <span class="chip-sub" id="chipSub44">Різ 54 мм</span>
           </button>
           <button type="button" class="preset-chip-btn" data-preset="32">
             <span id="chipTitle32">32 мм</span>
@@ -1829,6 +1826,10 @@
           <button type="button" class="preset-chip-btn" data-preset="25">
             <span id="chipTitle25">25 мм</span>
             <span class="chip-sub" id="chipSub25">Різ 35 мм</span>
+          </button>
+          <button type="button" class="preset-chip-btn" data-preset="75">
+            <span id="chipTitle75">75 мм</span>
+            <span class="chip-sub" id="chipSub75">Різ 86 мм</span>
           </button>
           <button type="button" class="preset-chip-btn" data-preset="custom">
             <span id="chipTitleCustom" data-i18n="presetCustomFace">Свій</span>
@@ -1889,38 +1890,9 @@
         </div>
       </div>
 
-      <!-- Drag Mode Switcher -->
-      <div class="drag-mode-pills" id="dragModePills">
-        <button type="button" class="mode-pill-btn active" data-mode="auto" id="modeAutoBtn">
-          ⚡ <span data-i18n="modeAuto">Авто</span>
-        </button>
-        <button type="button" class="mode-pill-btn" data-mode="move" id="modeMoveBtn">
-          ✋ <span data-i18n="modeMove">Рух</span>
-        </button>
-        <button type="button" class="mode-pill-btn" data-mode="rotate" id="modeRotateBtn">
-          🔄 <span data-i18n="modeRotate">Поворот</span>
-        </button>
-        <button type="button" class="mode-pill-btn" data-mode="zoom" id="modeZoomBtn">
-          🔍 <span data-i18n="modeZoom">Масштаб</span>
-        </button>
-      </div>
-
-      <!-- Interactive Gesture & Mouse Helper Card -->
-      <div class="gesture-helper-card">
-        <div class="gesture-helper-row">
-          <span class="gesture-icon">📱</span>
-          <div class="gesture-desc">
-            <strong data-i18n="gestureTouchTitle">Сенсор:</strong>
-            <span data-i18n="gestureTouchDesc">1 палець — переміщення, 2 пальці — одночасний масштаб (pinch) та поворот (twist).</span>
-          </div>
-        </div>
-        <div class="gesture-helper-row">
-          <span class="gesture-icon">🖱️</span>
-          <div class="gesture-desc">
-            <strong data-i18n="gestureMouseTitle">Мишка (ПК):</strong>
-            <span data-i18n="gestureMouseDesc">ЛКМ всередині — рух; ЛКМ біля краю/ручки ⟳ або ПКМ — поворот; коліщатко або Shift+тягнути — масштаб.</span>
-          </div>
-        </div>
+      <!-- Compact Gesture Hint -->
+      <div class="crop-hint-text">
+        💡 <span data-i18n="gestureHint">1 палець — рух • 2 пальці — масштаб та поворот • ручка ⟳ — обертання</span>
       </div>
 
       <!-- Accessible off-screen file & camera inputs -->
@@ -1929,26 +1901,13 @@
 
       <!-- Cropper Manipulator Controls -->
       <div class="cropper-controls">
-        <!-- Zoom Slider -->
-        <div class="control-slider-row">
-          <span class="slider-label" data-i18n="zoomLabel">Масштаб:</span>
-          <input type="range" id="zoomRange" class="range-slider" min="0.2" max="4.0" step="0.01" value="1.0">
-          <span id="zoomReadout" class="slider-val-readout">1.00x</span>
-          <button type="button" class="mini-action-btn" id="resetZoomBtn" data-i18n="resetZoom">1x</button>
-        </div>
-
-        <!-- Rotation Slider -->
-        <div class="control-slider-row">
-          <span class="slider-label" data-i18n="rotationLabel">Поворот:</span>
-          <input type="range" id="rotRange" class="range-slider" min="-180" max="180" step="1" value="0">
-          <span id="rotReadout" class="slider-val-readout">0°</span>
-          <button type="button" class="mini-action-btn" id="rotate90Btn" title="Rotate +90°">+90°</button>
-        </div>
-
         <!-- Quick Image Actions -->
-        <div class="crop-actions-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.45rem;">
-          <button type="button" class="mini-action-btn" id="centerImgBtn" data-i18n-title="centerImgTooltip" title="Вирівняти фото по центру">
-            🎯 <span data-i18n="centerImg">Центрувати</span>
+        <div class="crop-actions-row">
+          <button type="button" class="mini-action-btn" id="centerImgBtn" data-i18n-title="centerImgTooltip" title="Центрувати фото">
+            🎯 <span data-i18n="centerImg">Центр</span>
+          </button>
+          <button type="button" class="mini-action-btn" id="fitFaceBtn" data-i18n-title="fitFaceTooltip" title="Вписати фото у лицьову зону значка">
+            📐 <span data-i18n="fitFace">Вписати</span>
           </button>
           <label for="fileInput" class="mini-action-btn" id="replaceImgBtn" data-i18n-title="replacePhotoTooltip" title="Замінити фото на інше">
             🔄 <span data-i18n="replacePhoto">Замінити</span>
@@ -1956,6 +1915,23 @@
           <button type="button" class="mini-action-btn btn-danger-subtle" id="discardPhotoBtn" data-i18n-title="discardPhotoTooltip" title="Прибрати це фото">
             🗑️ <span data-i18n="discardPhoto">Прибрати</span>
           </button>
+        </div>
+
+        <!-- Zoom Slider -->
+        <div class="control-slider-row">
+          <span class="slider-label" data-i18n="zoomLabel">Масштаб:</span>
+          <input type="range" id="zoomRange" class="range-slider" min="0.2" max="4.0" step="0.01" value="1.0">
+          <span id="zoomReadout" class="slider-val-readout">1.00x</span>
+          <button type="button" class="mini-action-btn" id="resetZoomBtn" data-i18n="resetZoom" data-i18n-title="resetZoomTooltip" title="Скинути масштаб">1x</button>
+        </div>
+
+        <!-- Rotation Slider -->
+        <div class="control-slider-row">
+          <span class="slider-label" data-i18n="rotationLabel">Поворот:</span>
+          <input type="range" id="rotRange" class="range-slider" min="-180" max="180" step="1" value="0">
+          <span id="rotReadout" class="slider-val-readout">0°</span>
+          <button type="button" class="mini-action-btn" id="resetRotBtn" data-i18n-title="resetRotTooltip" title="Скинути поворот">0°</button>
+          <button type="button" class="mini-action-btn" id="rotate90Btn" data-i18n-title="rotate90Tooltip" title="Повернути на +90°">+90°</button>
         </div>
 
         <!-- Add To Sheet Row -->
@@ -1966,208 +1942,153 @@
             <button type="button" class="step-btn" id="copyIncBtn" data-i18n-title="incQtyTooltip" title="Збільшити">+</button>
           </div>
           <button type="button" class="btn-primary-add" id="addToSheetBtn">
-            ➕ <span data-i18n="addToSheet">Додати в лист</span>
+            ➕ <span data-i18n="addToSheet">Додати на аркуш</span>
           </button>
-        </div>
-
-        <!-- Live Document Badges Strip inside Editor -->
-        <div id="editorDocStrip" class="editor-doc-strip" style="display: none;">
-          <div class="doc-strip-header">
-            <span class="doc-strip-title">
-              📄 <span data-i18n="docStripTitle">Уже в документі:</span>
-              <strong id="editorDocCount">0 шт.</strong>
-            </span>
-            <button type="button" class="doc-strip-view-btn" id="editorViewSheetBtn">
-              <span data-i18n="docStripView">Переглянути аркуш</span> ➔
-            </button>
-          </div>
-          <div id="editorDocThumbList" class="doc-strip-thumbs">
-            <!-- Dynamically populated badge cards with mini thumbnail and quick delete -->
-          </div>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT STUDIO COLUMN: (Side-by-side on desktop, segmented tabs on mobile) -->
-    <div class="desktop-right-col">
-      <!-- 2. QUEUE PANEL -->
-      <section id="queuePanel" class="dashboard-panel mobile-tab-content">
-        <div class="panel-mobile-header">
-          <button type="button" class="panel-back-btn" id="queueBackToEditorBtn">
-            <span data-i18n="backToEditor">← Редактор (додати ще)</span>
+    <!-- 2. RIGHT COLUMN: SHEET & DOCUMENT (Unified Studio View) -->
+    <section id="sheetPanel" class="dashboard-panel mobile-tab-content">
+      <!-- Mobile Top Navigation Header -->
+      <div class="panel-mobile-header">
+        <button type="button" class="panel-back-btn" id="sheetBackToEditorBtn">
+          <span data-i18n="backToEditor">← Редактор значка</span>
+        </button>
+        <button type="button" class="mini-action-btn btn-danger-subtle" id="sheetClearDocBtn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з документа">
+          🗑 <span data-i18n="clearDocBtn">Очистити аркуш</span>
+        </button>
+      </div>
+
+      <!-- 1. Paper Format & Margins Setup -->
+      <div class="paper-settings-card">
+        <div class="paper-header-row">
+          <label class="form-label" style="font-size: 0.85rem;" data-i18n="paperHeading">Формат паперу та поля:</label>
+          <div class="fav-chips-bar" id="favChipsBar">
+            <!-- Dynamically populated favorite chips -->
+          </div>
+        </div>
+
+        <div class="paper-controls-grid">
+          <!-- Paper Dropdown -->
+          <div class="form-group">
+            <label class="form-label" data-i18n="paperFormatSelect">Формат:</label>
+            <div style="display: flex; gap: 0.35rem;">
+              <select id="paperSelect" class="paper-select"></select>
+              <button type="button" id="starPaperBtn" class="toggle-fav-btn starred" data-i18n-title="addFavTooltip" title="Додати в обране (★)">
+                ★
+              </button>
+            </div>
+          </div>
+
+          <!-- Orientation Toggle -->
+          <div class="form-group">
+            <label class="form-label" data-i18n="orientationLabel">Орієнтація:</label>
+            <div class="orientation-switch">
+              <button type="button" class="orient-btn active" id="orientPortBtn" data-orient="portrait">
+                📄 <span data-i18n="portrait">Книжк.</span>
+              </button>
+              <button type="button" class="orient-btn" id="orientLandBtn" data-orient="landscape">
+                📑 <span data-i18n="landscape">Альбом.</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Margins Input -->
+          <div class="form-group">
+            <label class="form-label" data-i18n="marginsLabel">Поля (мм):</label>
+            <input type="number" id="marginInput" class="num-input" value="5.0" min="0" max="40" step="0.5">
+          </div>
+
+          <!-- Gap Input -->
+          <div class="form-group">
+            <label class="form-label" data-i18n="gapLabel">Зазор (мм):</label>
+            <input type="number" id="gapInput" class="num-input" value="2.5" min="0" max="25" step="0.5">
+          </div>
+        </div>
+
+        <!-- Custom Paper Dimensions -->
+        <div id="customPaperRow" class="custom-paper-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="customPaperW">Ширина паперу (мм):</label>
+            <input type="number" id="customPaperWInput" class="num-input" value="210" min="50" max="1000" step="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="customPaperH">Висота паперу (мм):</label>
+            <input type="number" id="customPaperHInput" class="num-input" value="297" min="50" max="1000" step="1">
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Sheet Preview Area -->
+      <div class="sheet-preview-wrap">
+        <div class="sheet-toolbar">
+          <div class="sheet-pagination-group">
+            <button type="button" id="prevPageBtn" class="page-nav-btn" data-i18n-title="prevPageTooltip" title="Попередня сторінка" disabled>◀</button>
+            <span id="pageIndicator" class="page-indicator-text">Стор. 1 з 1</span>
+            <button type="button" id="nextPageBtn" class="page-nav-btn" data-i18n-title="nextPageTooltip" title="Наступна сторінка" disabled>▶</button>
+          </div>
+
+          <div id="sheetStatsBadge" class="sheet-stats-badge">
+            <span id="placedStatsText">0 розміщено (100%) • 0 аркушів</span>
+          </div>
+        </div>
+
+        <!-- High-Res Interactive Sheet Canvas -->
+        <div class="sheet-canvas-container" id="sheetCanvasContainer">
+          <canvas id="sheetCanvas" width="840" height="1188"></canvas>
+        </div>
+      </div>
+
+      <!-- 3. Badges on Sheet (Single Unified Source of Truth) -->
+      <div class="sheet-doc-badges-card" id="sheetDocBadgesCard">
+        <div class="sheet-doc-header">
+          <div class="sheet-doc-title">
+            📋 <span data-i18n="docBadgesTitle">Значки в документі:</span>
+            <span id="docBadgesCountBadge" class="queue-badge-count">0 шт.</span>
+          </div>
+          <button type="button" class="mini-action-btn btn-danger-subtle" id="sheetClearAllBtn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з документа">
+            🗑 <span data-i18n="clearDocBtn">Очистити</span>
           </button>
-          <button type="button" class="panel-back-btn" id="queueGoToSheetBtn" style="border-color: var(--accent); color: var(--accent-hover);">
-            <span data-i18n="tabSheet">Аркуш</span> ➔
+        </div>
+        <div id="docBadgesListContainer" class="queue-list-container">
+          <!-- Dynamically populated badge cards with delete/stepper buttons -->
+        </div>
+      </div>
+
+      <!-- 4. Bottom Action Bar (PDF, PNG, Direct Print) -->
+      <div class="export-actions-bar">
+        <div class="export-buttons-group">
+          <button type="button" id="downloadPdfBtn" class="btn-download-pdf">
+            📥 <span data-i18n="downloadPdf">Завантажити PDF (300 DPI)</span>
+          </button>
+          <button type="button" id="downloadImageBtn" class="btn-download-img">
+            🖼️ <span data-i18n="downloadImage">Зберегти PNG (300 DPI)</span>
+          </button>
+          <button type="button" id="printSheetBtn" class="btn-quick-print">
+            🖨️ <span data-i18n="printSheet">Швидкий друк</span>
           </button>
         </div>
-        <div class="panel-header">
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <h2 class="panel-title">
-              <span data-i18n="queueHeading">Черга значків:</span>
-            </h2>
-            <span id="queueCountBadge" class="queue-badge-count">0 шт.</span>
-          </div>
-          <button type="button" id="clearQueueBtn" class="queue-clear-btn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з черги">
-            🗑 <span data-i18n="clearAll">Очистити все</span>
-          </button>
+
+        <div class="print-scale-notice">
+          <span>ℹ</span>
+          <span data-i18n="printAlert">
+            Важливо: у налаштуваннях друку оберіть «Реальний розмір» або 100% масштаб без полів!
+          </span>
         </div>
-
-        <div id="queueListContainer" class="queue-list-container">
-          <div class="queue-empty-placeholder" data-i18n="queueEmpty">
-            Черга порожня. Додайте значки з редактора зліва.
-          </div>
-        </div>
-
-      </section>
-
-      <!-- 3. SHEET PREVIEW & PDF EXPORT PANEL -->
-      <section id="sheetPanel" class="dashboard-panel mobile-tab-content">
-        <!-- Mobile Top Navigation Header -->
-        <div class="panel-mobile-header">
-          <button type="button" class="panel-back-btn" id="sheetBackToEditorBtn">
-            <span data-i18n="backToEditor">← Редактор (додати ще)</span>
-          </button>
-          <button type="button" class="mini-action-btn btn-danger-subtle" id="sheetClearDocBtn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з документа">
-            🗑 <span data-i18n="clearDocBtn">Очистити аркуш</span>
-          </button>
-        </div>
-        <!-- Paper Format & Margins Setup -->
-        <div class="paper-settings-card">
-          <div class="paper-header-row">
-            <label class="form-label" style="font-size: 0.85rem;" data-i18n="paperHeading">Формат паперу та поля:</label>
-            
-            <!-- Favorites Chips Bar -->
-            <div class="fav-chips-bar" id="favChipsBar">
-              <!-- Dynamically populated favorite chips -->
-            </div>
-          </div>
-
-          <div class="paper-controls-grid">
-            <!-- Paper Dropdown -->
-            <div class="form-group">
-              <label class="form-label" data-i18n="paperFormatSelect">Формат:</label>
-              <div style="display: flex; gap: 0.35rem;">
-                <select id="paperSelect" class="paper-select"></select>
-                <button type="button" id="starPaperBtn" class="toggle-fav-btn starred" data-i18n-title="addFavTooltip" title="Додати в обране (★)">
-                  ★
-                </button>
-              </div>
-            </div>
-
-            <!-- Orientation Toggle -->
-            <div class="form-group">
-              <label class="form-label" data-i18n="orientationLabel">Орієнтація:</label>
-              <div class="orientation-switch">
-                <button type="button" class="orient-btn active" id="orientPortBtn" data-orient="portrait">
-                  📄 <span data-i18n="portrait">Книжк.</span>
-                </button>
-                <button type="button" class="orient-btn" id="orientLandBtn" data-orient="landscape">
-                  📑 <span data-i18n="landscape">Альбом.</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Margins Input -->
-            <div class="form-group">
-              <label class="form-label" data-i18n="marginsLabel">Поля (мм):</label>
-              <input type="number" id="marginInput" class="num-input" value="5.0" min="0" max="40" step="0.5">
-            </div>
-
-            <!-- Gap Input -->
-            <div class="form-group">
-              <label class="form-label" data-i18n="gapLabel">Зазор (мм):</label>
-              <input type="number" id="gapInput" class="num-input" value="2.5" min="0" max="25" step="0.5">
-            </div>
-          </div>
-
-          <!-- Custom Paper Dimensions (revealed when 'custom' selected) -->
-          <div id="customPaperRow" class="custom-paper-row">
-            <div class="form-group">
-              <label class="form-label" data-i18n="customPaperW">Ширина паперу (мм):</label>
-              <input type="number" id="customPaperWInput" class="num-input" value="210" min="50" max="1000" step="1">
-            </div>
-            <div class="form-group">
-              <label class="form-label" data-i18n="customPaperH">Висота паперу (мм):</label>
-              <input type="number" id="customPaperHInput" class="num-input" value="297" min="50" max="1000" step="1">
-            </div>
-          </div>
-        </div>
-
-        <!-- Sheet Preview Area -->
-        <div class="sheet-preview-wrap">
-          <div class="sheet-toolbar">
-            <div class="sheet-pagination-group">
-              <button type="button" id="prevPageBtn" class="page-nav-btn" data-i18n-title="prevPageTooltip" title="Попередня сторінка" disabled>◀</button>
-              <span id="pageIndicator" class="page-indicator-text">Стор. 1 з 1</span>
-              <button type="button" id="nextPageBtn" class="page-nav-btn" data-i18n-title="nextPageTooltip" title="Наступна сторінка" disabled>▶</button>
-            </div>
-
-            <div id="sheetStatsBadge" class="sheet-stats-badge">
-              <span id="placedStatsText">0 розміщено (100%) • 0 аркушів</span>
-            </div>
-          </div>
-
-          <!-- High-Res Interactive Sheet Canvas -->
-          <div class="sheet-canvas-container" id="sheetCanvasContainer">
-            <canvas id="sheetCanvas" width="840" height="1188"></canvas>
-          </div>
-        </div>
-
-        <!-- Badges on Sheet (Direct Management & Delete from Document) -->
-        <div class="sheet-doc-badges-card" id="sheetDocBadgesCard">
-          <div class="sheet-doc-header">
-            <div class="sheet-doc-title">
-              📋 <span data-i18n="docBadgesTitle">Значки на аркуші:</span>
-              <span id="sheetDocCountBadge" class="queue-badge-count">0 шт.</span>
-            </div>
-            <button type="button" class="mini-action-btn" id="sheetClearAllBtn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з документа">
-              🗑 <span data-i18n="clearDocBtn">Очистити</span>
-            </button>
-          </div>
-          <div id="sheetBadgesListContainer" class="queue-list-container">
-            <!-- Dynamically populated badge cards with delete/stepper buttons -->
-          </div>
-        </div>
-
-        <!-- Bottom Action Bar (PDF & Direct Print) -->
-        <div class="export-actions-bar">
-          <div class="export-buttons-group">
-            <button type="button" id="downloadPdfBtn" class="btn-download-pdf">
-              📥 <span data-i18n="downloadPdf">Завантажити PDF (300 DPI)</span>
-            </button>
-            <button type="button" id="downloadImageBtn" class="btn-download-img">
-              🖼️ <span data-i18n="downloadImage">Зберегти PNG (300 DPI)</span>
-            </button>
-            <button type="button" id="printSheetBtn" class="btn-quick-print">
-              🖨️ <span data-i18n="printSheet">Швидкий друк</span>
-            </button>
-          </div>
-
-          <div class="print-scale-notice">
-            <span>ℹ</span>
-            <span data-i18n="printAlert">
-              Важливо: у налаштуваннях друку оберіть «Реальний розмір» або 100% масштаб без полів!
-            </span>
-          </div>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
   </main>
 
-  <!-- Mobile Bottom Navigation Bar -->
+  <!-- Mobile Bottom Navigation Bar (2 Tabs Only) -->
   <nav class="mobile-nav-bar" id="mobileNavBar">
     <button type="button" class="mobile-nav-tab active" data-tab="editor" id="tabEditorBtn">
-      <span class="tab-icon">🎨</span>
-      <span class="tab-text" data-i18n="tabEditor">Редактор</span>
-    </button>
-    <button type="button" class="mobile-nav-tab" data-tab="queue" id="tabQueueBtn">
-      <span class="tab-icon">📋</span>
-      <span class="tab-text" data-i18n="tabQueue">Черга</span>
-      <span class="tab-badge-pill" id="mobileQueueBadge">0</span>
+      <span class="tab-icon">✂️</span>
+      <span data-i18n="tabEditor">Редактор</span>
     </button>
     <button type="button" class="mobile-nav-tab" data-tab="sheet" id="tabSheetBtn">
-      <span class="tab-icon">🖨️</span>
-      <span class="tab-text" data-i18n="tabSheet">Аркуш</span>
+      <span class="tab-icon">📄</span>
+      <span data-i18n="tabSheet">Аркуш</span>
       <span class="tab-badge-pill" id="mobileSheetBadge" style="display: none;">0</span>
     </button>
   </nav>
@@ -2207,7 +2128,7 @@
         langToggleTooltip: "Перемкнути на English",
         
         // Editor Panel
-        navEditor: "Редактор макета",
+        navEditor: "Редактор значка",
         badgeSizeHeading: "Розмір значка (прес):",
         presetCut: "Різ {mm} мм",
         presetCustomFace: "Свій",
@@ -2220,23 +2141,15 @@
         dragDropHint: "Перетягніть фото сюди або вставте з буфера (Ctrl+V)",
         galleryBtn: "Галерея",
         cameraBtn: "Камера",
-        replacePhoto: "Замінити фото",
-        centerImg: "Центрувати",
+        replacePhoto: "Замінити",
+        centerImg: "Центр",
+        fitFace: "Вписати",
+        fitFaceTooltip: "Вписати фото у лицьову зону значка",
         centerImgTooltip: "Вирівняти фото по центру",
         resetZoomTooltip: "Скинути масштаб (1x)",
+        resetRotTooltip: "Скинути поворот (0°)",
         rotate90Tooltip: "Повернути на +90°",
-        
-        // Mode toggles
-        modeAuto: "Авто",
-        modeMove: "Рух",
-        modeRotate: "Поворот",
-        modeZoom: "Масштаб",
-        
-        // Gestures hint
-        gestureTouchTitle: "Сенсор:",
-        gestureTouchDesc: "1 палець — переміщення, 2 пальці — одночасний масштаб (pinch) та поворот (twist).",
-        gestureMouseTitle: "Мишка (ПК):",
-        gestureMouseDesc: "ЛКМ всередині — рух; ЛКМ біля краю, ручка ⟳ або ПКМ — поворот; коліщатко або Shift+тягнути — масштаб.",
+        gestureHint: "1 палець — рух • 2 пальці — масштаб та поворот • ручка ⟳ — обертання",
         rotateHandleHint: "Поворот (перетягніть мишкою або пальцем)",
         notchHint: "Засічка на 12 годин для вирівнювання в матриці преса",
         
@@ -2247,30 +2160,29 @@
         copiesLabel: "Кількість копій:",
         decQtyTooltip: "Зменшити кількість",
         incQtyTooltip: "Збільшити кількість",
-        addToSheet: "Додати в лист",
+        addToSheet: "Додати на аркуш",
         
-        // Queue Panel
-        queueHeading: "Черга значків:",
+        // Document & Sheet Panel
         queueUnit: "шт.",
-        clearAll: "Очистити все",
-        clearAllTooltip: "Очистити всі значки з черги",
-        queueEmpty: "Черга порожня. Додайте значки з редактора зліва.",
+        clearAll: "Очистити аркуш",
+        clearAllTooltip: "Очистити всі значки з документа",
+        queueEmpty: "Документ порожній. Додайте значки в редакторі зліва.",
         cardDeleteTooltip: "Видалити значок",
         cardDecreaseTooltip: "Зменшити кількість",
         cardIncreaseTooltip: "Збільшити кількість",
-        backToEditor: "← Назад до редактора",
-        discardPhoto: "Прибрати фото",
+        editBadgeTooltip: "Відкрити в редакторі",
+        backToEditor: "← Редактор значка",
+        discardPhoto: "Прибрати",
         discardPhotoTooltip: "Прибрати це фото з редактора",
         replacePhotoTooltip: "Замінити фото на інше",
         toastPhotoDiscarded: "Фото прибрано з редактора",
-        docBadgesTitle: "Значки на аркуші:",
-        docStripTitle: "Уже в документі:",
-        docStripView: "Переглянути аркуш",
+        docBadgesTitle: "Значки в документі:",
         clearDocBtn: "Очистити аркуш",
-        clearModalTitle: "Очистити чергу?",
-        clearConfirm: "Ви впевнені, що хочете видалити всі значки з черги?",
+        clearModalTitle: "Очистити аркуш?",
+        clearConfirm: "Ви впевнені, що хочете видалити всі значки з цього документа?",
         cancel: "Скасувати",
         confirm: "Видалити",
+        badgeLoadedToast: "Значок відкрито в редакторі",
         
         // Paper settings
         paperHeading: "Формат паперу та поля:",
@@ -2306,9 +2218,8 @@
         generatingImage: "Генерація PNG (300 DPI)...",
         printAlert: "Важливо: у налаштуваннях друку оберіть «Реальний розмір» або 100% масштаб без полів!",
         
-        // Mobile navigation
+        // Mobile navigation (2 tabs only)
         tabEditor: "Редактор",
-        tabQueue: "Черга",
         tabSheet: "Аркуш",
         viewSheetAction: "Аркуш ➔",
         
@@ -2322,8 +2233,8 @@
         wrapLabel: "{wrap} мм",
         
         // Toasts & Alerts
-        toastAdded: "Додано в лист: {count} шт.",
-        toastCleared: "Чергу значків очищено",
+        toastAdded: "Додано на аркуш: {count} шт.",
+        toastCleared: "Документ очищено",
         toastImageLoaded: "Зображення завантажено",
         toastNeedImage: "Спочатку завантажте зображення!",
         toastKeepOneFav: "Залиште хоча б один обраний формат",
@@ -2354,23 +2265,15 @@
         dragDropHint: "Drag & drop image here or paste from clipboard (Ctrl+V)",
         galleryBtn: "Gallery",
         cameraBtn: "Camera",
-        replacePhoto: "Replace Photo",
+        replacePhoto: "Replace",
         centerImg: "Center",
+        fitFace: "Fit Face",
+        fitFaceTooltip: "Fit image within visible badge face",
         centerImgTooltip: "Center image in badge",
         resetZoomTooltip: "Reset zoom (1x)",
+        resetRotTooltip: "Reset rotation (0°)",
         rotate90Tooltip: "Rotate +90°",
-        
-        // Mode toggles
-        modeAuto: "Auto",
-        modeMove: "Pan",
-        modeRotate: "Rotate",
-        modeZoom: "Zoom",
-        
-        // Gestures hint
-        gestureTouchTitle: "Touch:",
-        gestureTouchDesc: "1 finger to pan, 2 fingers to pinch-zoom & twist-rotate simultaneously.",
-        gestureMouseTitle: "Mouse (PC):",
-        gestureMouseDesc: "Left-click inside to pan; drag near edge, knob ⟳ or Right-click to rotate; wheel or Shift+drag to zoom.",
+        gestureHint: "1 finger to pan • 2 fingers to zoom & rotate • handle ⟳ to rotate",
         rotateHandleHint: "Rotate (drag with mouse or finger)",
         notchHint: "12 o'clock notch for matrix alignment",
         
@@ -2383,28 +2286,27 @@
         incQtyTooltip: "Increase quantity",
         addToSheet: "Add to Sheet",
         
-        // Queue Panel
-        queueHeading: "Badge Queue:",
+        // Document & Sheet Panel
         queueUnit: "pcs",
-        clearAll: "Clear All",
-        clearAllTooltip: "Clear all badges from queue",
-        queueEmpty: "Queue is empty. Add badges using the editor on the left.",
+        clearAll: "Clear Sheet",
+        clearAllTooltip: "Clear all badges from document",
+        queueEmpty: "Document is empty. Add badges using the editor on the left.",
         cardDeleteTooltip: "Delete badge",
         cardDecreaseTooltip: "Decrease quantity",
         cardIncreaseTooltip: "Increase quantity",
-        backToEditor: "← Back to Editor",
-        discardPhoto: "Discard Photo",
+        editBadgeTooltip: "Load into editor",
+        backToEditor: "← Badge Editor",
+        discardPhoto: "Discard",
         discardPhotoTooltip: "Discard this photo from editor",
         replacePhotoTooltip: "Replace photo with another",
         toastPhotoDiscarded: "Photo discarded from editor",
-        docBadgesTitle: "Badges on Sheet:",
-        docStripTitle: "In Document:",
-        docStripView: "View Sheet",
+        docBadgesTitle: "Badges in Document:",
         clearDocBtn: "Clear Sheet",
-        clearModalTitle: "Clear Queue?",
-        clearConfirm: "Are you sure you want to remove all badges from the queue?",
+        clearModalTitle: "Clear Sheet?",
+        clearConfirm: "Are you sure you want to remove all badges from this document?",
         cancel: "Cancel",
         confirm: "Delete",
+        badgeLoadedToast: "Badge loaded into editor",
         
         // Paper settings
         paperHeading: "Paper Format & Margins:",
@@ -2440,9 +2342,8 @@
         generatingImage: "Generating PNG (300 DPI)...",
         printAlert: "Important: in print settings choose 'Actual Size' or 100% scale without margins!",
         
-        // Mobile navigation
+        // Mobile navigation (2 tabs only)
         tabEditor: "Editor",
-        tabQueue: "Queue",
         tabSheet: "Sheet",
         viewSheetAction: "Sheet ➔",
         
@@ -2457,7 +2358,7 @@
         
         // Toasts & Alerts
         toastAdded: "Added to sheet: {count} pcs",
-        toastCleared: "Queue cleared",
+        toastCleared: "Document cleared",
         toastImageLoaded: "Image loaded",
         toastNeedImage: "Please load an image first!",
         toastKeepOneFav: "Keep at least one favorite format",
@@ -2468,10 +2369,7 @@
         filePrefix: "PinBadges"
       }
     };
-
-    /* ========================================================================
-       2. PAPER FORMATS DATA (Office, Photo, US, Custom)
-       ======================================================================== */
+    
     const PAPER_FORMATS = {
       // Office Formats
       'A4': { name: 'A4', w: 210, h: 297, cat: 'office', inch: '' },
@@ -2672,6 +2570,11 @@
       if (chip58) chip58.textContent = `58 ${mm}`;
       if (chipSub58) chipSub58.textContent = dict.presetCut.replace('{mm}', '70');
 
+      const chip44 = document.getElementById('chipTitle44');
+      const chipSub44 = document.getElementById('chipSub44');
+      if (chip44) chip44.textContent = `44 ${mm}`;
+      if (chipSub44) chipSub44.textContent = dict.presetCut.replace('{mm}', '54');
+
       const chip32 = document.getElementById('chipTitle32');
       const chipSub32 = document.getElementById('chipSub32');
       if (chip32) chip32.textContent = `32 ${mm}`;
@@ -2681,6 +2584,11 @@
       const chipSub25 = document.getElementById('chipSub25');
       if (chip25) chip25.textContent = `25 ${mm}`;
       if (chipSub25) chipSub25.textContent = dict.presetCut.replace('{mm}', '35');
+
+      const chip75 = document.getElementById('chipTitle75');
+      const chipSub75 = document.getElementById('chipSub75');
+      if (chip75) chip75.textContent = `75 ${mm}`;
+      if (chipSub75) chipSub75.textContent = dict.presetCut.replace('{mm}', '86');
 
       const chipCustom = document.getElementById('chipTitleCustom');
       const chipSubCustom = document.getElementById('chipSubCustom');
@@ -3500,128 +3408,137 @@
     }
 
     function renderQueueList() {
-      const container = document.getElementById('queueListContainer');
-      const sheetContainer = document.getElementById('sheetBadgesListContainer');
-      const editorDocStrip = document.getElementById('editorDocStrip');
-      const editorDocCount = document.getElementById('editorDocCount');
-      const editorDocThumbList = document.getElementById('editorDocThumbList');
-      const countBadge = document.getElementById('queueCountBadge');
-      const sheetDocCountBadge = document.getElementById('sheetDocCountBadge');
-      const mobBadge = document.getElementById('mobileQueueBadge');
+      const container = document.getElementById('docBadgesListContainer');
+      const countBadge = document.getElementById('docBadgesCountBadge');
       const dict = I18N[state.lang];
       
       const totalBadges = state.queue.reduce((sum, item) => sum + item.count, 0);
       const countStr = `${totalBadges} ${dict.queueUnit}`;
       if (countBadge) countBadge.textContent = countStr;
-      if (sheetDocCountBadge) sheetDocCountBadge.textContent = countStr;
-      if (mobBadge) mobBadge.textContent = totalBadges;
 
-      // Update badge pills on mobile bottom navigation tabs
+      // Update badge pill on mobile bottom navigation tab
       const mobSheetBadge = document.getElementById('mobileSheetBadge');
       if (mobSheetBadge) {
         mobSheetBadge.textContent = totalBadges;
         mobSheetBadge.style.display = totalBadges > 0 ? 'inline-block' : 'none';
       }
 
-      // Update Editor Document Strip
-      if (editorDocStrip && editorDocCount && editorDocThumbList) {
-        if (state.queue.length > 0) {
-          editorDocStrip.style.display = 'flex';
-          editorDocCount.textContent = countStr;
-          editorDocThumbList.innerHTML = '';
-          state.queue.forEach((item, index) => {
-            const stripItem = document.createElement('div');
-            stripItem.className = 'doc-strip-item';
-            stripItem.innerHTML = `
-              <img src="${item.thumbUrl}" alt="Badge preview" class="doc-strip-thumb">
-              <div class="doc-strip-info">
-                <span class="doc-strip-size">Ø ${item.visibleMm}/${item.cutMm}</span>
-                <span class="doc-strip-count">× ${item.count}</span>
-              </div>
-              <button type="button" class="doc-strip-del" title="${dict.cardDeleteTooltip}">✕</button>
-            `;
-            stripItem.querySelector('.doc-strip-del').addEventListener('click', (e) => {
-              e.stopPropagation();
-              state.queue.splice(index, 1);
-              renderQueueList();
-              saveState();
-              recalculatePackingAndRender();
-              triggerHaptic('medium');
-            });
-            editorDocThumbList.appendChild(stripItem);
-          });
-        } else {
-          editorDocStrip.style.display = 'none';
-        }
+      if (!container) return;
+
+      if (state.queue.length === 0) {
+        container.innerHTML = `
+          <div class="queue-empty-placeholder" data-i18n="queueEmpty">
+            ${dict.queueEmpty}
+          </div>
+        `;
+        return;
       }
 
-      const renderInto = (targetContainer) => {
-        if (!targetContainer) return;
-
-        if (state.queue.length === 0) {
-          targetContainer.innerHTML = `
-            <div class="queue-empty-placeholder" data-i18n="queueEmpty">
-              ${dict.queueEmpty}
+      container.innerHTML = '';
+      state.queue.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'queue-item-card';
+        card.innerHTML = `
+          <div class="queue-thumb-wrap" title="${dict.editBadgeTooltip}">
+            <img src="${item.thumbUrl}" alt="Badge preview" class="queue-thumb-img">
+          </div>
+          <div class="queue-item-meta" title="${dict.editBadgeTooltip}">
+            <div class="queue-item-title" title="${item.name}">${item.name}</div>
+            <div class="queue-item-size-tag">Ø ${item.visibleMm}/${item.cutMm} ${dict.mmUnit}</div>
+            <div class="queue-item-stepper">
+              <button type="button" class="queue-step-mini-btn dec-btn" title="${dict.cardDecreaseTooltip}">-</button>
+              <span class="queue-step-val">${item.count}</span>
+              <button type="button" class="queue-step-mini-btn inc-btn" title="${dict.cardIncreaseTooltip}">+</button>
             </div>
-          `;
-          return;
-        }
+          </div>
+          <button type="button" class="queue-del-btn" title="${dict.cardDeleteTooltip}">✕</button>
+        `;
 
-        targetContainer.innerHTML = '';
-        state.queue.forEach((item, index) => {
-          const card = document.createElement('div');
-          card.className = 'queue-item-card';
-          card.innerHTML = `
-            <div class="queue-thumb-wrap">
-              <img src="${item.thumbUrl}" alt="Badge preview" class="queue-thumb-img">
-            </div>
-            <div class="queue-item-meta">
-              <div class="queue-item-title" title="${item.name}">${item.name}</div>
-              <div class="queue-item-size-tag">Ø ${item.visibleMm}/${item.cutMm} ${dict.mmUnit}</div>
-              <div class="queue-item-stepper">
-                <button type="button" class="queue-step-mini-btn dec-btn" title="${dict.cardDecreaseTooltip}">-</button>
-                <span class="queue-step-val">${item.count}</span>
-                <button type="button" class="queue-step-mini-btn inc-btn" title="${dict.cardIncreaseTooltip}">+</button>
-              </div>
-            </div>
-            <button type="button" class="queue-del-btn" title="${dict.cardDeleteTooltip}">✕</button>
-          `;
+        // Clicking thumbnail or text loads badge back into editor
+        card.querySelector('.queue-thumb-wrap').addEventListener('click', () => loadBadgeIntoEditor(item));
+        card.querySelector('.queue-item-title').addEventListener('click', () => loadBadgeIntoEditor(item));
+        card.querySelector('.queue-item-size-tag').addEventListener('click', () => loadBadgeIntoEditor(item));
 
-          // Card events
-          card.querySelector('.dec-btn').addEventListener('click', () => {
-            if (item.count > 1) {
-              item.count--;
-            } else {
-              state.queue.splice(index, 1);
-            }
-            renderQueueList();
-            saveState();
-            recalculatePackingAndRender();
-            triggerHaptic('light');
-          });
-
-          card.querySelector('.inc-btn').addEventListener('click', () => {
-            item.count++;
-            renderQueueList();
-            saveState();
-            recalculatePackingAndRender();
-            triggerHaptic('light');
-          });
-
-          card.querySelector('.queue-del-btn').addEventListener('click', () => {
+        // Stepper & Delete
+        card.querySelector('.dec-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (item.count > 1) {
+            item.count--;
+          } else {
             state.queue.splice(index, 1);
-            renderQueueList();
-            saveState();
-            recalculatePackingAndRender();
-            triggerHaptic('medium');
-          });
-
-          targetContainer.appendChild(card);
+          }
+          renderQueueList();
+          saveState();
+          recalculatePackingAndRender();
+          triggerHaptic('light');
         });
-      };
 
-      renderInto(container);
-      renderInto(sheetContainer);
+        card.querySelector('.inc-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          item.count++;
+          renderQueueList();
+          saveState();
+          recalculatePackingAndRender();
+          triggerHaptic('light');
+        });
+
+        card.querySelector('.queue-del-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.queue.splice(index, 1);
+          renderQueueList();
+          saveState();
+          recalculatePackingAndRender();
+          triggerHaptic('medium');
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function loadBadgeIntoEditor(item) {
+      if (!item) return;
+      state.visibleMm = item.visibleMm;
+      state.cutMm = item.cutMm;
+      
+      let matchedPreset = 'custom';
+      for (const [key, val] of Object.entries(BADGE_PRESETS)) {
+        if (val.visible === item.visibleMm && val.cut === item.cutMm) {
+          matchedPreset = key;
+          break;
+        }
+      }
+      state.badgePreset = matchedPreset;
+      document.querySelectorAll('.preset-chip-btn').forEach((b) => {
+        b.classList.toggle('active', b.getAttribute('data-preset') === matchedPreset);
+      });
+      const customBox = document.getElementById('customSizeBox');
+      if (customBox) {
+        customBox.classList.toggle('visible', matchedPreset === 'custom');
+      }
+
+      state.imgName = item.name;
+      state.copies = item.count || 1;
+      const copiesInput = document.getElementById('copiesInput');
+      if (copiesInput) copiesInput.value = state.copies.toString();
+
+      const img = new Image();
+      img.onload = () => {
+        state.image = img;
+        state.imgX = 0;
+        state.imgY = 0;
+        state.zoom = 1.0;
+        state.rotation = 0;
+        updateZoomUI();
+        updateRotationUI();
+        updateBleedCalc();
+        updatePresetBadgeText();
+        const emptyOverlay = document.getElementById('canvasEmptyOverlay');
+        if (emptyOverlay) emptyOverlay.classList.add('hidden');
+        drawCropCanvas();
+        switchMobileTab('editor');
+        showToast(I18N[state.lang].badgeLoadedToast);
+      };
+      img.src = item.highResUrl || item.thumbUrl;
     }
 
     /* ========================================================================
@@ -4270,7 +4187,34 @@
         state.imgX = 0;
         state.imgY = 0;
         drawCropCanvas();
+        triggerHaptic('light');
       });
+
+      // Fit Image within visible badge face
+      const fitFaceBtn = document.getElementById('fitFaceBtn');
+      if (fitFaceBtn) {
+        fitFaceBtn.addEventListener('click', () => {
+          if (!state.image) return;
+          state.imgX = 0;
+          state.imgY = 0;
+          const fitZoom = state.visibleMm / state.cutMm;
+          state.zoom = parseFloat(fitZoom.toFixed(2));
+          updateZoomUI();
+          drawCropCanvas();
+          triggerHaptic('light');
+        });
+      }
+
+      // Reset Rotation (0°)
+      const resetRotBtn = document.getElementById('resetRotBtn');
+      if (resetRotBtn) {
+        resetRotBtn.addEventListener('click', () => {
+          state.rotation = 0;
+          updateRotationUI();
+          drawCropCanvas();
+          triggerHaptic('light');
+        });
+      }
 
       // Copies Stepper
       const copiesInput = document.getElementById('copiesInput');
@@ -4297,17 +4241,11 @@
         discardBtn.addEventListener('click', discardCurrentPhoto);
       }
 
-      // Mobile back buttons
+      // Mobile back button
       const sheetBackBtn = document.getElementById('sheetBackToEditorBtn');
       if (sheetBackBtn) sheetBackBtn.addEventListener('click', () => switchMobileTab('editor'));
 
-      const queueBackBtn = document.getElementById('queueBackToEditorBtn');
-      if (queueBackBtn) queueBackBtn.addEventListener('click', () => switchMobileTab('editor'));
-
-      const queueGoToSheetBtn = document.getElementById('queueGoToSheetBtn');
-      if (queueGoToSheetBtn) queueGoToSheetBtn.addEventListener('click', () => switchMobileTab('sheet'));
-
-      // Sheet panel clear buttons
+      // Sheet clear buttons (mobile & desktop)
       const sheetClearDocBtn = document.getElementById('sheetClearDocBtn');
       if (sheetClearDocBtn) {
         sheetClearDocBtn.addEventListener('click', () => {
@@ -4429,11 +4367,7 @@
         });
       }
 
-      // Editor document strip view sheet button
-      const editorViewSheetBtn = document.getElementById('editorViewSheetBtn');
-      if (editorViewSheetBtn) {
-        editorViewSheetBtn.addEventListener('click', () => switchMobileTab('sheet'));
-      }
+      // 2-pane simplified studio
     }
 
     function triggerHaptic(type = 'light') {
@@ -4454,20 +4388,15 @@
       });
 
       const editorPanel = document.getElementById('editorPanel');
-      const queuePanel = document.getElementById('queuePanel');
       const sheetPanel = document.getElementById('sheetPanel');
 
       if (editorPanel) editorPanel.classList.remove('mobile-active');
-      if (queuePanel) queuePanel.classList.remove('mobile-active');
       if (sheetPanel) sheetPanel.classList.remove('mobile-active');
 
       if (tabKey === 'editor') {
         if (editorPanel) editorPanel.classList.add('mobile-active');
         drawCropCanvas();
-      } else if (tabKey === 'queue') {
-        if (queuePanel) queuePanel.classList.add('mobile-active');
-        renderQueueList();
-      } else if (tabKey === 'sheet') {
+      } else {
         if (sheetPanel) sheetPanel.classList.add('mobile-active');
         recalculatePackingAndRender();
       }
