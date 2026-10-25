@@ -1,0 +1,19 @@
+{
+  "name": "pinpoint",
+  "version": "1.0.0",
+  "description": "Client-side PWA for preparing, cropping, packing, and printing button badge blanks (VEVOR & compatible presses)",
+  "main": "index.html",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js"
+  },
+  "keywords": [
+    "button-badge",
+    "vevor",
+    "pwa",
+    "print-studio",
+    "crop",
+    "circle-packing"
+  ],
+  "author": "Nikuts",
+  "license": "MIT"
+}
