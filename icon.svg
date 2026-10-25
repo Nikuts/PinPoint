@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </radialGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded card -->
+  <rect width="512" height="512" rx="112" fill="#090d16"/>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#1e293b" stroke-width="4"/>
+
+  <!-- Badge Body Base -->
+  <circle cx="256" cy="256" r="195" fill="url(#bgGrad)" stroke="#334155" stroke-width="6"/>
+
+  <!-- Outer Cut Line (solid gray with guide ticks) -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#64748b" stroke-width="4" stroke-dasharray="8 4"/>
+
+  <!-- Bleed Wrap Zone -->
+  <circle cx="256" cy="256" r="135" fill="#0f172a" fill-opacity="0.8"/>
+
+  <!-- Inner Visible Face Line (vibrant cyan dashed) -->
+  <circle cx="256" cy="256" r="135" fill="none" stroke="url(#cyanGrad)" stroke-width="6" stroke-dasharray="14 10" filter="url(#glow)"/>
+
+  <!-- Center Pin button target symbol -->
+  <circle cx="256" cy="256" r="82" fill="#1e293b" stroke="#0ea5e9" stroke-width="5"/>
+  <circle cx="256" cy="256" r="42" fill="#0284c7" fill-opacity="0.25"/>
+
+  <!-- Center crosshair needle -->
+  <line x1="256" y1="194" x2="256" y2="318" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>
+  <line x1="194" y1="256" x2="318" y2="256" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="20" fill="#38bdf8"/>
+  <circle cx="256" cy="256" r="8" fill="#ffffff"/>
+
+  <!-- 12 o'clock notch mark (alignment marker) -->
+  <rect x="250" y="58" width="12" height="42" rx="4" fill="url(#amberGrad)" filter="url(#glow)"/>
+  <circle cx="256" cy="106" r="6" fill="#f59e0b"/>
+</svg>
