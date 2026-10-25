@@ -118,7 +118,7 @@ function createDOMEnvironment(options = {}) {
       querySelector: (sel) => {
         if (sel.startsWith('#')) {
           const id = sel.slice(1);
-          return elements.get(id) || mockElement(id);
+          return elements.get(id) || null;
         }
         return mockElement('dyn_' + sel.replace(/[^a-zA-Z0-9]/g, '_'));
       },
@@ -173,11 +173,14 @@ function createDOMEnvironment(options = {}) {
     scrollTo: () => {},
     history: { pushState: () => {} },
     devicePixelRatio: 2,
-    print: () => {}
+    printCalls: 0,
+    print: () => {
+      mockWindow.printCalls = (mockWindow.printCalls || 0) + 1;
+    }
   };
 
   const mockDocument = {
-    getElementById: (id) => elements.get(id) || mockElement(id),
+    getElementById: (id) => elements.get(id) || null,
     querySelectorAll: (sel) => {
       if (sel === '.preset-chip-btn') return presetChips;
       if (sel === '.mobile-nav-tab') return mobileNavTabs;
@@ -186,7 +189,7 @@ function createDOMEnvironment(options = {}) {
       return [];
     },
     querySelector: (sel) => {
-      if (sel.startsWith('#')) return elements.get(sel.slice(1)) || mockElement(sel.slice(1));
+      if (sel.startsWith('#')) return elements.get(sel.slice(1)) || null;
       return mockElement('dyn_' + sel);
     },
     documentElement: { lang: 'uk' },
@@ -268,7 +271,8 @@ function createDOMEnvironment(options = {}) {
       renderQueueList,
       recalculatePackingAndRender,
       switchMobileTab,
-      showToast
+      showToast,
+      printCurrentSheet
     };
   `);
 

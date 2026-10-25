@@ -310,6 +310,37 @@
             }
           },
           {
+            name: 'Clicking bottom nav tab button triggers tab switch',
+            fn: (win) => {
+              const tabSheet = win.document.querySelector('.mobile-nav-tab[data-tab="sheet"]');
+              const tabEditor = win.document.querySelector('.mobile-nav-tab[data-tab="editor"]');
+              assert.ok(tabSheet, 'Sheet tab must exist');
+              assert.ok(tabEditor, 'Editor tab must exist');
+              tabSheet.click();
+              assert.ok(win.document.getElementById('sheetPanel').classList.contains('mobile-active'));
+              tabEditor.click();
+              assert.ok(win.document.getElementById('editorPanel').classList.contains('mobile-active'));
+            }
+          },
+          {
+            name: 'Fast print button exists and checks for empty document',
+            fn: (win) => {
+              const printBtn = win.document.getElementById('printSheetBtn');
+              assert.ok(printBtn, 'Print button must exist');
+              win.state.queue = [];
+              win.state.packedPages = [];
+              let printed = false;
+              const origPrint = win.print;
+              win.print = () => { printed = true; };
+              try {
+                printBtn.click();
+                assert.strictEqual(printed, false, 'Print dialog must not open on empty document');
+              } finally {
+                win.print = origPrint;
+              }
+            }
+          },
+          {
             name: 'Loading badge into editor restores preset and copies',
             fn: (win) => {
               const mock = {

@@ -88,4 +88,34 @@ describe('UI: Document & Badges Flow', () => {
     assert.strictEqual(app.state.queue.length, 0);
     assert.strictEqual(app.state.packedPages.length, 0);
   });
+
+  it('prevents fast print and shows warning toast when document has no badges', () => {
+    const { app, elements, window } = createDOMEnvironment();
+
+    app.state.queue = [];
+    app.state.packedPages = [];
+    const printBtn = elements.get('printSheetBtn');
+    assert.ok(printBtn, 'printSheetBtn must exist');
+
+    printBtn.click();
+    assert.strictEqual(window.printCalls, 0, 'window.print must not be called when queue is empty');
+  });
+
+  it('triggers fast print when document contains packed badges', (t, done) => {
+    const { app, elements, window } = createDOMEnvironment();
+
+    app.state.queue = [
+      { id: '1', name: 'B1', visibleMm: 58, cutMm: 70, count: 2, radius: 35 }
+    ];
+    app.recalculatePackingAndRender();
+    assert.ok(app.state.packedPages.length > 0);
+
+    const printBtn = elements.get('printSheetBtn');
+    printBtn.click();
+
+    setTimeout(() => {
+      assert.strictEqual(window.printCalls, 1, 'window.print must be invoked after print timeout');
+      done();
+    }, 100);
+  });
 });

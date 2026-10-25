@@ -45,6 +45,32 @@ describe('UI: Mobile Navigation & Tab Switching', () => {
     assert.ok(!sheetPanel.classList.contains('mobile-active'));
   });
 
+  it('switches tabs when mobile bottom navigation buttons are clicked via event listeners', () => {
+    const { elements, mobileNavTabs } = createDOMEnvironment();
+
+    const editorPanel = elements.get('editorPanel');
+    const sheetPanel = elements.get('sheetPanel');
+    const tabEditor = mobileNavTabs.find(t => t.getAttribute('data-tab') === 'editor');
+    const tabSheet = mobileNavTabs.find(t => t.getAttribute('data-tab') === 'sheet');
+
+    assert.ok(tabEditor, 'Editor tab button must exist');
+    assert.ok(tabSheet, 'Sheet tab button must exist');
+
+    // Simulate clicking Sheet tab button in bottom nav
+    tabSheet.click();
+    assert.ok(sheetPanel.classList.contains('mobile-active'), 'Sheet panel must be mobile-active after clicking sheet tab');
+    assert.ok(!editorPanel.classList.contains('mobile-active'), 'Editor panel must not be active');
+    assert.ok(tabSheet.classList.contains('active'), 'Sheet tab button must have active class');
+    assert.ok(!tabEditor.classList.contains('active'), 'Editor tab button must not have active class');
+
+    // Simulate clicking Editor tab button in bottom nav
+    tabEditor.click();
+    assert.ok(editorPanel.classList.contains('mobile-active'), 'Editor panel must be mobile-active after clicking editor tab');
+    assert.ok(!sheetPanel.classList.contains('mobile-active'), 'Sheet panel must not be active');
+    assert.ok(tabEditor.classList.contains('active'), 'Editor tab button must have active class');
+    assert.ok(!tabSheet.classList.contains('active'), 'Sheet tab button must not have active class');
+  });
+
   it('updates mobile sheet badge pill count and toggles visibility', () => {
     const { app, elements } = createDOMEnvironment();
 

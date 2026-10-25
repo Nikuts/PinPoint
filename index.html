@@ -15,7 +15,14 @@
   <title id="pageTitle">PinPoint — Студія створення та друку заготовок значків</title>
 
   <!-- PWA Manifest & Icons -->
-  <link rel="manifest" href="manifest.json">
+  <script>
+    if (location.protocol !== 'file:') {
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = 'manifest.json';
+      document.head.appendChild(manifestLink);
+    }
+  </script>
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
 
@@ -1634,22 +1641,65 @@
 
     /* Print Specific Media */
     @media print {
-      body * {
-        visibility: hidden !important;
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        color: #000000 !important;
       }
-      #sheetCanvas, #sheetCanvas * {
-        visibility: visible !important;
+      header,
+      .mobile-nav-bar,
+      .modal-backdrop,
+      .toast-container,
+      #editorPanel,
+      .paper-settings-card,
+      .sheet-toolbar,
+      .sheet-doc-badges-card,
+      .export-actions-bar,
+      .panel-mobile-header,
+      .empty-sheet-msg {
+        display: none !important;
+      }
+      main,
+      .app-main-layout {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: none !important;
+        width: 100% !important;
+      }
+      #sheetPanel {
+        display: block !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      .sheet-preview-wrap,
+      .sheet-canvas-container {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        background: none !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
       }
       #sheetCanvas {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100vw !important;
-        height: 100vh !important;
-        max-width: none !important;
-        max-height: none !important;
-        box-shadow: none !important;
+        display: block !important;
+        visibility: visible !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 100vh !important;
+        object-fit: contain !important;
         border: none !important;
+        box-shadow: none !important;
       }
       @page {
         margin: 0;
@@ -2242,6 +2292,7 @@
         toastImageSuccess: "Зображення аркуша (PNG 300 DPI) успішно збережено!",
         toastJsPdfLoading: "Бібліотека jsPDF завантажується... Будь ласка, зачекайте",
         toastPdfError: "Помилка створення PDF: ",
+        toastNeedBadgesForPrint: "Спочатку додайте значки на аркуш для друку!",
         filePrefix: "PinBadges"
       },
       en: {
@@ -2366,6 +2417,7 @@
         toastImageSuccess: "Sheet image (PNG 300 DPI) saved successfully!",
         toastJsPdfLoading: "jsPDF library loading... Please try again in a moment",
         toastPdfError: "Error generating PDF: ",
+        toastNeedBadgesForPrint: "Please add badges to the sheet before printing!",
         filePrefix: "PinBadges"
       }
     };
@@ -4036,8 +4088,14 @@
        12. DIRECT BROWSER PRINT
        ======================================================================== */
     function printCurrentSheet() {
-      if (state.packedPages.length === 0) return;
-      window.print();
+      if (state.queue.length === 0 || state.packedPages.length === 0) {
+        showToast(I18N[state.lang].toastNeedBadgesForPrint);
+        return;
+      }
+      renderSheetCanvas();
+      setTimeout(() => {
+        window.print();
+      }, 60);
     }
 
     /* ========================================================================
@@ -4310,22 +4368,25 @@
         recalculatePackingAndRender();
       });
 
-      // Clear Queue & Modal
+      // Clear Document Modal actions
       const modal = document.getElementById('confirmModal');
-      document.getElementById('clearQueueBtn').addEventListener('click', () => {
-        if (state.queue.length > 0) modal.classList.add('open');
-      });
-      document.getElementById('modalCancelBtn').addEventListener('click', () => {
-        modal.classList.remove('open');
-      });
-      document.getElementById('modalConfirmBtn').addEventListener('click', () => {
-        state.queue = [];
-        renderQueueList();
-        saveState();
-        recalculatePackingAndRender();
-        modal.classList.remove('open');
-        showToast(I18N[state.lang].toastCleared);
-      });
+      const modalCancelBtn = document.getElementById('modalCancelBtn');
+      if (modalCancelBtn) {
+        modalCancelBtn.addEventListener('click', () => {
+          if (modal) modal.classList.remove('open');
+        });
+      }
+      const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+      if (modalConfirmBtn) {
+        modalConfirmBtn.addEventListener('click', () => {
+          state.queue = [];
+          renderQueueList();
+          saveState();
+          recalculatePackingAndRender();
+          if (modal) modal.classList.remove('open');
+          showToast(I18N[state.lang].toastCleared);
+        });
+      }
 
       // Pagination buttons
       document.getElementById('prevPageBtn').addEventListener('click', () => {
