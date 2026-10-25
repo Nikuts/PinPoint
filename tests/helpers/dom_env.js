@@ -88,12 +88,22 @@ function createDOMEnvironment(options = {}) {
 
       toDataURL: () => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
       toBlob: (cb) => {
-        cb({ size: 1000, type: 'image/png' });
+        cb(new Blob(['fake-png-bytes'], { type: 'image/png' }));
       },
 
       value: '',
       textContent: '',
-      innerHTML: '',
+      _innerHTML: '',
+      get innerHTML() {
+        return el._innerHTML || '';
+      },
+      set innerHTML(val) {
+        el._innerHTML = String(val);
+        if (val === '') {
+          el.children = [];
+          if (el.subElements) el.subElements.clear();
+        }
+      },
       disabled: false,
 
       appendChild: (child) => {
@@ -120,17 +130,48 @@ function createDOMEnvironment(options = {}) {
           const id = sel.slice(1);
           return elements.get(id) || null;
         }
-        return mockElement('dyn_' + sel.replace(/[^a-zA-Z0-9]/g, '_'));
+        el.subElements = el.subElements || new Map();
+        if (!el.subElements.has(sel)) {
+          const sub = mockElement('dyn_' + sel.replace(/[^a-zA-Z0-9]/g, '_'));
+          sub.parentNode = el;
+          el.subElements.set(sel, sub);
+        }
+        return el.subElements.get(sel);
       },
       querySelectorAll: (sel) => []
     };
     return el;
   }
 
-  // Pre-populate elements with IDs in index.html
-  const idMatches = [...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]);
-  idMatches.forEach(id => {
-    elements.set(id, mockElement(id));
+  // Pre-populate elements with IDs, classes, and inline styles in index.html
+  const tagMatches = [...html.matchAll(/<([a-zA-Z0-9-]+)([^>]*)>/g)];
+  tagMatches.forEach(m => {
+    const tagName = m[1];
+    const attrs = m[2];
+    const idMatch = attrs.match(/\bid="([^"]+)"/);
+    if (idMatch) {
+      const id = idMatch[1];
+      const classMatch = attrs.match(/\bclass="([^"]+)"/);
+      const classes = classMatch ? classMatch[1].split(/\s+/).filter(Boolean) : [];
+      const el = mockElement(id, tagName);
+      classes.forEach(c => el.classList.add(c));
+
+      const styleMatch = attrs.match(/\bstyle="([^"]+)"/);
+      if (styleMatch) {
+        const declarations = styleMatch[1].split(';').map(s => s.trim()).filter(Boolean);
+        declarations.forEach(d => {
+          const colonIdx = d.indexOf(':');
+          if (colonIdx !== -1) {
+            const prop = d.slice(0, colonIdx).trim();
+            const val = d.slice(colonIdx + 1).trim();
+            const camelProp = prop.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+            el.style[camelProp] = val;
+          }
+        });
+      }
+
+      elements.set(id, el);
+    }
   });
 
   // Extract preset buttons
@@ -161,6 +202,21 @@ function createDOMEnvironment(options = {}) {
   };
 
   const windowListeners = {};
+  class MockJsPDF {
+    constructor(opts) {
+      this.opts = opts;
+      this.pages = 1;
+      this.savedFiles = [];
+    }
+    addImage() {}
+    addPage() { this.pages++; }
+    save(filename) { this.savedFiles.push(filename); }
+    setDrawColor() {}
+    setLineWidth() {}
+    circle() {}
+    line() {}
+  }
+
   const mockWindow = {
     addEventListener: (evt, fn) => {
       windowListeners[evt] = windowListeners[evt] || [];
@@ -176,7 +232,9 @@ function createDOMEnvironment(options = {}) {
     printCalls: 0,
     print: () => {
       mockWindow.printCalls = (mockWindow.printCalls || 0) + 1;
-    }
+    },
+    jspdf: { jsPDF: MockJsPDF },
+    windowListeners
   };
 
   const mockDocument = {
@@ -245,6 +303,8 @@ function createDOMEnvironment(options = {}) {
   global.navigator = mockNavigator;
   global.Image = MockImage;
   global.FileReader = MockFileReader;
+  global.URL.createObjectURL = global.URL.createObjectURL || ((blob) => `blob:mock/${Math.random().toString(36).slice(2)}`);
+  global.URL.revokeObjectURL = global.URL.revokeObjectURL || (() => {});
 
   // Execute application code inside a wrapper function that exports internal scope
   const runCode = new Function(`
@@ -272,7 +332,9 @@ function createDOMEnvironment(options = {}) {
       recalculatePackingAndRender,
       switchMobileTab,
       showToast,
-      printCurrentSheet
+      printCurrentSheet,
+      downloadPdf,
+      downloadSheetImage
     };
   `);
 
@@ -289,6 +351,7 @@ function createDOMEnvironment(options = {}) {
     storage: mockLocalStorage,
     storageMap: storage,
     window: mockWindow,
+    windowListeners,
     document: mockDocument,
     presetChips,
     mobileNavTabs

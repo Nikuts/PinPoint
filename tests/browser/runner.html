@@ -358,6 +358,83 @@
             }
           }
         ]
+      },
+      {
+        name: 'UI Journey: Complete Real User Workflow',
+        tests: [
+          {
+            name: 'User Journey: Load badge, pick preset 58, fit face, increment copies, add to sheet & switch tab',
+            fn: async (win) => {
+              // 1. Set mock image
+              win.state.image = new Image();
+              win.state.imgName = 'user_photo';
+              
+              // 2. Select 58mm preset
+              const chip58 = win.document.querySelector('.preset-chip-btn[data-preset="58"]');
+              assert.ok(chip58, '58mm chip must exist');
+              chip58.click();
+              assert.strictEqual(win.state.visibleMm, 58);
+              assert.strictEqual(win.state.cutMm, 70);
+
+              // 3. Fit face
+              const fitFaceBtn = win.document.getElementById('fitFaceBtn');
+              fitFaceBtn.click();
+              assert.strictEqual(win.state.zoom, parseFloat((58 / 70).toFixed(2)));
+
+              // 4. Increment copies
+              const incBtn = win.document.getElementById('copyIncBtn');
+              incBtn.click(); // copies = 2
+              incBtn.click(); // copies = 3
+              assert.strictEqual(win.state.copies, 3);
+
+              // 5. Add to sheet
+              const addBtn = win.document.getElementById('addToSheetBtn');
+              addBtn.click();
+              await new Promise(r => setTimeout(r, 60));
+              assert.strictEqual(win.state.queue.length, 1);
+              assert.strictEqual(win.state.queue[0].count, 3);
+
+              // 6. Switch to sheet tab
+              const tabSheet = win.document.querySelector('.mobile-nav-tab[data-tab="sheet"]');
+              tabSheet.click();
+              assert.ok(win.document.getElementById('sheetPanel').classList.contains('mobile-active'));
+              const badgePill = win.document.getElementById('mobileSheetBadge');
+              assert.strictEqual(badgePill.textContent, '3');
+            }
+          },
+          {
+            name: 'User Journey: Adjust badge quantity in document list, clear via modal & cancel safeguard',
+            fn: (win) => {
+              const listContainer = win.document.getElementById('docBadgesListContainer');
+              assert.ok(listContainer.children.length >= 1, 'At least 1 card in document list');
+              const card = listContainer.children[0];
+              const incBtn = card.querySelector('.inc-btn');
+              assert.ok(incBtn, 'Stepper inc btn exists');
+              incBtn.click();
+              assert.strictEqual(win.state.queue[0].count, 4);
+
+              // Clear button triggers modal
+              const clearBtn = win.document.getElementById('sheetClearAllBtn');
+              const modal = win.document.getElementById('confirmModal');
+              clearBtn.click();
+              assert.ok(modal.classList.contains('open'), 'Modal must open');
+
+              // Cancel preserves queue
+              const cancelBtn = win.document.getElementById('modalCancelBtn');
+              cancelBtn.click();
+              assert.ok(!modal.classList.contains('open'));
+              assert.strictEqual(win.state.queue.length, 1);
+
+              // Confirm clears queue
+              clearBtn.click();
+              const confirmBtn = win.document.getElementById('modalConfirmBtn');
+              confirmBtn.click();
+              assert.ok(!modal.classList.contains('open'));
+              assert.strictEqual(win.state.queue.length, 0);
+            }
+          }
+        ]
+      }
       }
     ];
 
