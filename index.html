@@ -8,6 +8,7 @@
   <meta name="theme-color" content="#090d16">
   <meta name="description" content="PinPoint — Студія точної підготовки, компонування та друку заготовок для значків (button badge maker, під преси VEVOR)">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="PinPoint">
 
@@ -2579,7 +2580,13 @@
 
         const savedQueue = localStorage.getItem('pinpoint_queue');
         if (savedQueue) {
-          state.queue = JSON.parse(savedQueue);
+          const parsed = JSON.parse(savedQueue);
+          if (Array.isArray(parsed)) {
+            state.queue = parsed.map(item => ({
+              ...item,
+              highResUrl: item.highResUrl || item.thumbUrl
+            }));
+          }
         }
       } catch (err) {
         console.warn('Could not read localStorage:', err);
@@ -2595,8 +2602,20 @@
         localStorage.setItem('pinpoint_margin', state.marginMm.toString());
         localStorage.setItem('pinpoint_gap', state.gapMm.toString());
         
-        // Save queue
-        localStorage.setItem('pinpoint_queue', JSON.stringify(state.queue));
+        // Save queue without heavy highResUrl to prevent localStorage QuotaExceededError
+        const lightweightQueue = state.queue.map(item => ({
+          id: item.id,
+          name: item.name,
+          visibleMm: item.visibleMm,
+          cutMm: item.cutMm,
+          count: item.count,
+          thumbUrl: item.thumbUrl
+        }));
+        try {
+          localStorage.setItem('pinpoint_queue', JSON.stringify(lightweightQueue));
+        } catch (queueErr) {
+          console.warn('Could not save queue to localStorage:', queueErr);
+        }
       } catch (err) {
         console.warn('Could not save to localStorage:', err);
       }
@@ -3137,7 +3156,11 @@
     }
 
     function loadImageFile(file) {
-      if (!file || !file.type.startsWith('image/')) return;
+      if (!file) return;
+      const isImage = (file.type && file.type.startsWith('image/')) || 
+                      /\.(jpe?g|png|webp|bmp|gif|svg|avif|heic|heif)$/i.test(file.name || '');
+      if (!isImage && file.type) return;
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
@@ -3154,14 +3177,20 @@
           drawCropCanvas();
           showToast(I18N[state.lang].toastImageLoaded);
         };
+        img.onerror = () => {
+          showToast(state.lang === 'uk' ? 'Помилка завантаження зображення' : 'Error loading image');
+        };
         img.src = e.target.result;
+      };
+      reader.onerror = () => {
+        showToast(state.lang === 'uk' ? 'Помилка читання файлу' : 'Error reading file');
       };
       reader.readAsDataURL(file);
     }
 
     function drawCropCanvas() {
       const dpr = Math.min(window.devicePixelRatio || 1, 3);
-      const logicalSize = CROP_CANVAS_LOGICAL_SIZE;
+      const logicalSize = CROP_LOGICAL_SIZE;
       const targetW = Math.round(logicalSize * dpr);
       const targetH = Math.round(logicalSize * dpr);
 
@@ -3860,17 +3889,7 @@
       sheetCtx.stroke();
       sheetCtx.restore();
 
-      // 2. Visible Front Line (dashed cyan guide in preview)
-      sheetCtx.save();
-      sheetCtx.beginPath();
-      sheetCtx.arc(cx, cy, faceRadiusPx, 0, Math.PI * 2);
-      sheetCtx.strokeStyle = 'rgba(14, 165, 233, 0.85)';
-      sheetCtx.lineWidth = 1.2;
-      sheetCtx.setLineDash([4, 4]);
-      sheetCtx.stroke();
-      sheetCtx.restore();
-
-      // 3. Top 12 o'clock Notch (centering line)
+      // 2. Top 12 o'clock Notch (centering line)
       sheetCtx.save();
       sheetCtx.beginPath();
       sheetCtx.moveTo(cx, cy - cutRadiusPx - 6);
@@ -4050,16 +4069,6 @@
             ctx.stroke();
             ctx.restore();
 
-            // Inner visible face guide (dashed cyan line)
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(cx, cy, faceRadiusPx, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(14, 165, 233, 0.85)';
-            ctx.lineWidth = Math.max(1.2, 0.12 * pxPerMm);
-            ctx.setLineDash([Math.round(4 * pxPerMm / 4), Math.round(4 * pxPerMm / 4)]);
-            ctx.stroke();
-            ctx.restore();
-
             // Top 12 o'clock notch tick (1.5mm outside to 1.2mm inside)
             ctx.save();
             ctx.beginPath();
@@ -4208,19 +4217,23 @@
         });
       }
 
+      fileInput.addEventListener('click', () => {
+        fileInput.value = '';
+      });
       fileInput.addEventListener('change', (e) => {
         if (e.target.files && e.target.files[0]) {
           loadImageFile(e.target.files[0]);
         }
-        fileInput.value = '';
       });
 
       if (cameraInput) {
+        cameraInput.addEventListener('click', () => {
+          cameraInput.value = '';
+        });
         cameraInput.addEventListener('change', (e) => {
           if (e.target.files && e.target.files[0]) {
             loadImageFile(e.target.files[0]);
           }
-          cameraInput.value = '';
         });
       }
 
@@ -4474,6 +4487,56 @@
       const tab = (e.state && e.state.tab) || 'editor';
       switchMobileTab(tab, false);
     });
+
+    function showToast(msg, actionText = null, actionCallback = null) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast-msg';
+
+      if (actionText && actionCallback) {
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.justifyContent = 'space-between';
+        toast.style.gap = '0.75rem';
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = msg;
+        toast.appendChild(textSpan);
+
+        const actionBtn = document.createElement('button');
+        actionBtn.type = 'button';
+        actionBtn.style.background = 'var(--accent)';
+        actionBtn.style.color = '#fff';
+        actionBtn.style.border = 'none';
+        actionBtn.style.borderRadius = 'var(--radius-sm)';
+        actionBtn.style.padding = '0.3rem 0.6rem';
+        actionBtn.style.fontWeight = '700';
+        actionBtn.style.fontSize = '0.78rem';
+        actionBtn.style.cursor = 'pointer';
+        actionBtn.style.whiteSpace = 'nowrap';
+        actionBtn.textContent = actionText;
+        actionBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          actionCallback();
+          if (toast.remove) toast.remove();
+          else if (toast.parentNode) toast.parentNode.removeChild(toast);
+        });
+        toast.appendChild(actionBtn);
+      } else {
+        toast.textContent = msg;
+      }
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => {
+          if (toast.remove) toast.remove();
+          else if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, actionText ? 5000 : 3000);
+    }
 
     /* ========================================================================
        15. INITIALIZATION
