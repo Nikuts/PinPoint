@@ -807,42 +807,14 @@
       gap: 0.35rem;
     }
 
-    /* Mode Switcher Pills */
-    .drag-mode-pills {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.35rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.3rem;
+    /* Vector Spin Icon for Loading States */
+    .spin-icon {
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
     }
-
-    .mode-pill-btn {
-      background: none;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      border-radius: var(--radius-sm);
-      padding: 0.35rem 0.2rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-      transition: all var(--transition-fast);
-      white-space: nowrap;
-    }
-    .mode-pill-btn:hover {
-      color: var(--text-main);
-      background: var(--bg-surface);
-    }
-    .mode-pill-btn.active {
-      background: rgba(14, 165, 233, 0.2);
-      border-color: var(--accent);
-      color: var(--accent-hover);
-      box-shadow: 0 0 8px var(--accent-glow);
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     /* Gesture & Mouse Helper Card */
@@ -1742,6 +1714,16 @@
       gap: 0.5rem;
       pointer-events: none;
     }
+    @media (max-width: 1023px) {
+      .toast-container {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem) !important;
+        right: 1rem !important;
+        left: 1rem !important;
+      }
+      .toast-msg {
+        max-width: 100%;
+      }
+    }
 
     .toast-msg {
       background: rgba(15, 23, 42, 0.95);
@@ -1843,6 +1825,7 @@
       header,
       .mobile-nav-bar,
       .modal-backdrop,
+      .paper-catalog-modal,
       .toast-container,
       #editorPanel,
       .paper-settings-card,
@@ -2195,7 +2178,7 @@
           </div>
           <button type="button" class="btn-primary-add" id="addToSheetBtn">
             <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span data-i18n="addToSheet">Додати на аркуш</span>
+            <span id="addToSheetBtnText" data-i18n="addToSheet">Додати на аркуш</span>
           </button>
         </div>
       </div>
@@ -2219,7 +2202,7 @@
       <div class="paper-settings-card">
         <div class="paper-header-row">
           <label class="form-label" style="font-size: 0.85rem;" data-i18n="paperHeading">Формат паперу та поля:</label>
-          <button type="button" id="openPaperCatalogBtn" class="catalog-trigger-btn" onclick="openPaperPickerModal()">
+          <button type="button" id="openPaperCatalogBtn" class="catalog-trigger-btn">
             <span data-i18n="allFormatsCatalog">Всі формати та обране...</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
@@ -2368,11 +2351,11 @@
   <!-- ========================================================================
        MODAL CONFIRMATION DIALOG
        ======================================================================== -->
-  <div id="confirmModal" class="modal-backdrop">
+  <div id="confirmModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
     <div class="modal-box">
-      <div class="modal-title" data-i18n="clearModalTitle">Очистити чергу?</div>
+      <div class="modal-title" id="confirmModalTitle" data-i18n="clearModalTitle">Очистити аркуш?</div>
       <div class="modal-desc" data-i18n="clearConfirm">
-        Ви впевнені, що хочете видалити всі значки з черги?
+        Ви впевнені, що хочете видалити всі значки з цього документа?
       </div>
       <div class="modal-actions">
         <button type="button" class="mini-action-btn" id="modalCancelBtn" data-i18n="cancel">Скасувати</button>
@@ -2384,11 +2367,11 @@
   <!-- ========================================================================
        PAPER FORMAT CATALOG & FAVORITES MODAL
        ======================================================================== -->
-  <div id="paperPickerModal" class="paper-catalog-modal">
+  <div id="paperPickerModal" class="paper-catalog-modal" role="dialog" aria-modal="true" aria-labelledby="paperCatalogTitleText">
     <div class="paper-catalog-box">
       <div class="modal-header-row" style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
         <div>
-          <div class="modal-title" style="font-size: 1rem; font-weight: 700; color: #ffffff;" data-i18n="paperCatalogTitle">Каталог форматів паперу</div>
+          <div class="modal-title" id="paperCatalogTitleText" style="font-size: 1rem; font-weight: 700; color: #ffffff;" data-i18n="paperCatalogTitle">Каталог форматів паперу</div>
           <div class="modal-desc" style="font-size: 0.75rem; color: #a1a1aa;" data-i18n="paperCatalogDesc">Оберіть розмір та закріпіть обрані (★) на панель</div>
         </div>
         <button type="button" onclick="closePaperPickerModal()" class="mini-action-btn" style="width: 32px; height: 32px; padding: 0; border-radius: 9999px; display: flex; align-items: center; justify-content: center;" aria-label="Close">
@@ -2470,6 +2453,7 @@
         decQtyTooltip: "Зменшити кількість",
         incQtyTooltip: "Збільшити кількість",
         addToSheet: "Додати на аркуш",
+        updateInSheet: "Оновити в документі",
         
         // Document & Sheet Panel
         queueUnit: "шт.",
@@ -2561,6 +2545,8 @@
         toastJsPdfLoading: "Бібліотека jsPDF завантажується... Будь ласка, зачекайте",
         toastPdfError: "Помилка створення PDF: ",
         toastNeedBadgesForPrint: "Спочатку додайте значки на аркуш для друку!",
+        toastUpdated: "Значок оновлено в документі",
+        toastImageError: "Помилка збереження зображення",
         filePrefix: "PinBadges"
       },
       en: {
@@ -2604,6 +2590,7 @@
         decQtyTooltip: "Decrease quantity",
         incQtyTooltip: "Increase quantity",
         addToSheet: "Add to Sheet",
+        updateInSheet: "Update in Document",
         
         // Document & Sheet Panel
         queueUnit: "pcs",
@@ -2695,27 +2682,29 @@
         toastJsPdfLoading: "jsPDF library loading... Please try again in a moment",
         toastPdfError: "Error generating PDF: ",
         toastNeedBadgesForPrint: "Please add badges to the sheet before printing!",
+        toastUpdated: "Badge updated in document",
+        toastImageError: "Error saving sheet image",
         filePrefix: "PinBadges"
       }
     };
     
     const PAPER_FORMATS = {
       // Office Formats
-      'A4': { name: 'A4 Standard',        chip: 'A4',       w: 210,   h: 297,   cat: 'office', inch: '',      desc: '210 × 297 mm · Standard Office Sheet' },
-      'A3': { name: 'A3 Large',           chip: 'A3',       w: 297,   h: 420,   cat: 'office', inch: '',      desc: '297 × 420 mm · Double size capacity' },
-      'A5': { name: 'A5 Compact',         chip: 'A5',       w: 148,   h: 210,   cat: 'office', inch: '',      desc: '148 × 210 mm · Half sheet' },
-      'A6': { name: 'A6 Mini',            chip: 'A6',       w: 105,   h: 148,   cat: 'office', inch: '',      desc: '105 × 148 mm · Postcard size' },
+      'A4': { name: 'A4 Standard',        chip: 'A4',       w: 210,   h: 297,   cat: 'office', inch: '',      descUk: '210 × 297 мм · Стандартний офісний аркуш', descEn: '210 × 297 mm · Standard Office Sheet' },
+      'A3': { name: 'A3 Large',           chip: 'A3',       w: 297,   h: 420,   cat: 'office', inch: '',      descUk: '297 × 420 мм · Подвійна місткість значків', descEn: '297 × 420 mm · Double size capacity' },
+      'A5': { name: 'A5 Compact',         chip: 'A5',       w: 148,   h: 210,   cat: 'office', inch: '',      descUk: '148 × 210 мм · Половина аркуша A4',        descEn: '148 × 210 mm · Half sheet' },
+      'A6': { name: 'A6 Mini',            chip: 'A6',       w: 105,   h: 148,   cat: 'office', inch: '',      descUk: '105 × 148 мм · Формат листівки',            descEn: '105 × 148 mm · Postcard size' },
       // Photo Formats
-      '10x15': { name: '10 × 15 cm (4×6")', chip: '10×15 cm', w: 101.6, h: 152.4, cat: 'photo',  inch: '4×6"', desc: '101.6 × 152.4 mm · Popular photo paper' },
-      '13x18': { name: '13 × 18 cm (5×7")', chip: '13×18 cm', w: 127.0, h: 177.8, cat: 'photo',  inch: '5×7"', desc: '127.0 × 177.8 mm · Medium photo card' },
-      '9x13':  { name: '9 × 13 cm (3.5×5")', chip: '9×13 cm',  w: 88.9,  h: 127.0, cat: 'photo',  inch: '3.5×5"', desc: '88.9 × 127.0 mm · Pocket photo size' },
-      '15x20': { name: '15 × 20 cm (6×8")', chip: '15×20 cm', w: 152.4, h: 203.2, cat: 'photo',  inch: '6×8"', desc: '152.4 × 203.2 mm · Large studio photo' },
-      '10x10': { name: '10 × 10 cm Square', chip: '10×10 cm', w: 100.0, h: 100.0, cat: 'photo',  inch: 'sq',   desc: '100.0 × 100.0 mm · Square craft cut' },
+      '10x15': { name: '10 × 15 cm (4×6")', chip: '10×15 cm', w: 101.6, h: 152.4, cat: 'photo',  inch: '4×6"', descUk: '101.6 × 152.4 мм · Популярний фотопапір',   descEn: '101.6 × 152.4 mm · Popular photo paper' },
+      '13x18': { name: '13 × 18 cm (5×7")', chip: '13×18 cm', w: 127.0, h: 177.8, cat: 'photo',  inch: '5×7"', descUk: '127.0 × 177.8 мм · Середня фотокартка',      descEn: '127.0 × 177.8 mm · Medium photo card' },
+      '9x13':  { name: '9 × 13 cm (3.5×5")', chip: '9×13 cm',  w: 88.9,  h: 127.0, cat: 'photo',  inch: '3.5×5"', descUk: '88.9 × 127.0 мм · Кишенькове фото',         descEn: '88.9 × 127.0 mm · Pocket photo size' },
+      '15x20': { name: '15 × 20 cm (6×8")', chip: '15×20 cm', w: 152.4, h: 203.2, cat: 'photo',  inch: '6×8"', descUk: '152.4 × 203.2 мм · Велике студійне фото',     descEn: '152.4 × 203.2 mm · Large studio photo' },
+      '10x10': { name: '10 × 10 cm Square', chip: '10×10 cm', w: 100.0, h: 100.0, cat: 'photo',  inch: 'sq',   descUk: '100.0 × 100.0 мм · Квадратний аркуш',         descEn: '100.0 × 100.0 mm · Square craft cut' },
       // US Formats
-      'Letter': { name: 'US Letter',          chip: 'Letter',   w: 215.9, h: 279.4, cat: 'us',     inch: '8.5×11"', desc: '8.5 × 11.0 in (215.9 × 279.4 mm)' },
-      'Legal':  { name: 'US Legal',           chip: 'Legal',    w: 215.9, h: 355.6, cat: 'us',     inch: '8.5×14"', desc: '8.5 × 14.0 in (215.9 × 355.6 mm)' },
+      'Letter': { name: 'US Letter',          chip: 'Letter',   w: 215.9, h: 279.4, cat: 'us',     inch: '8.5×11"', descUk: '8.5 × 11.0 дюймів (215.9 × 279.4 мм)',    descEn: '8.5 × 11.0 in (215.9 × 279.4 mm)' },
+      'Legal':  { name: 'US Legal',           chip: 'Legal',    w: 215.9, h: 355.6, cat: 'us',     inch: '8.5×14"', descUk: '8.5 × 14.0 дюймів (215.9 × 355.6 мм)',    descEn: '8.5 × 14.0 in (215.9 × 355.6 mm)' },
       // Custom
-      'custom': { name: 'Custom Dimension',   chip: 'Custom',   w: 210,   h: 297,   cat: 'custom', inch: '',     desc: 'Manually defined width × height (mm)' }
+      'custom': { name: 'Custom Dimension',   chip: 'Custom',   w: 210,   h: 297,   cat: 'custom', inch: '',     descUk: 'Власні розміри: ширина × висота (мм)',     descEn: 'Manually defined width × height (mm)' }
     };
 
     function getPaperFormatLabel(key, isFavorite = false) {
@@ -2743,6 +2732,63 @@
     };
 
     /* ========================================================================
+       2b. CLIENT-SIDE PERSISTENT STORAGE (INDEXEDDB FOR 300 DPI ASSETS)
+       ======================================================================== */
+    const PinPointDB = {
+      dbName: 'PinPointStorage',
+      storeName: 'badges',
+      open() {
+        return new Promise((resolve) => {
+          if (typeof window === 'undefined' || !window.indexedDB) return resolve(null);
+          try {
+            const req = indexedDB.open(this.dbName, 1);
+            req.onupgradeneeded = (e) => {
+              const db = e.target.result;
+              if (!db.objectStoreNames.contains(this.storeName)) {
+                db.createObjectStore(this.storeName, { keyPath: 'id' });
+              }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+          } catch (_) {
+            resolve(null);
+          }
+        });
+      },
+      async saveQueue(queue) {
+        try {
+          const db = await this.open();
+          if (!db) return false;
+          return new Promise((resolve) => {
+            const tx = db.transaction(this.storeName, 'readwrite');
+            const store = tx.objectStore(this.storeName);
+            store.clear();
+            queue.forEach((item) => store.put(item));
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => resolve(false);
+          });
+        } catch (_) {
+          return false;
+        }
+      },
+      async loadQueue() {
+        try {
+          const db = await this.open();
+          if (!db) return null;
+          return new Promise((resolve) => {
+            const tx = db.transaction(this.storeName, 'readonly');
+            const store = tx.objectStore(this.storeName);
+            const req = store.getAll();
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => resolve(null);
+          });
+        } catch (_) {
+          return null;
+        }
+      }
+    };
+
+    /* ========================================================================
        3. APPLICATION STATE
        ======================================================================== */
     const state = {
@@ -2760,6 +2806,8 @@
       
       // Cropper state
       image: null,
+      sourceImageSrc: null,
+      editingBadgeId: null,
       imgName: 'Pin Badge',
       imgX: 0,
       imgY: 0,
@@ -2775,7 +2823,7 @@
     };
 
     /* ========================================================================
-       4. LOCALSTORAGE PERSISTENCE
+       4. LOCALSTORAGE & PERSISTENCE
        ======================================================================== */
     function loadSavedState() {
       try {
@@ -2795,6 +2843,25 @@
         if (savedPaper && PAPER_FORMATS[savedPaper]) {
           state.paperKey = savedPaper;
         }
+
+        const savedCustomW = localStorage.getItem('pinpoint_custom_paper_w');
+        if (savedCustomW) state.customPaperW = parseFloat(savedCustomW) || 210;
+
+        const savedCustomH = localStorage.getItem('pinpoint_custom_paper_h');
+        if (savedCustomH) state.customPaperH = parseFloat(savedCustomH) || 297;
+
+        const savedPreset = localStorage.getItem('pinpoint_badge_preset');
+        if (savedPreset && BADGE_PRESETS[savedPreset]) {
+          state.badgePreset = savedPreset;
+          state.visibleMm = BADGE_PRESETS[savedPreset].visible;
+          state.cutMm = BADGE_PRESETS[savedPreset].cut;
+        }
+
+        const savedVisible = localStorage.getItem('pinpoint_visible_mm');
+        if (savedVisible) state.visibleMm = parseFloat(savedVisible) || state.visibleMm;
+
+        const savedCut = localStorage.getItem('pinpoint_cut_mm');
+        if (savedCut) state.cutMm = parseFloat(savedCut) || state.cutMm;
 
         const savedOrient = localStorage.getItem('pinpoint_orient');
         if (savedOrient === 'portrait' || savedOrient === 'landscape') {
@@ -2822,11 +2889,40 @@
       }
     }
 
+    async function hydrateQueueFromIndexedDB() {
+      try {
+        const fullQueue = await PinPointDB.loadQueue();
+        if (Array.isArray(fullQueue) && fullQueue.length > 0) {
+          const map = new Map(fullQueue.map(b => [b.id, b]));
+          let updated = false;
+          state.queue = state.queue.map(item => {
+            const full = map.get(item.id);
+            if (full && full.highResUrl && full.highResUrl !== item.highResUrl) {
+              updated = true;
+              return { ...item, ...full };
+            }
+            return full || item;
+          });
+          if (updated) {
+            renderQueueList();
+            recalculatePackingAndRender();
+          }
+        }
+      } catch (e) {
+        console.warn('IndexedDB hydration skipped:', e);
+      }
+    }
+
     function saveState() {
       try {
         localStorage.setItem('pinpoint_lang', state.lang);
         localStorage.setItem('pinpoint_favorites', JSON.stringify(state.favorites));
         localStorage.setItem('pinpoint_paper', state.paperKey);
+        localStorage.setItem('pinpoint_custom_paper_w', state.customPaperW.toString());
+        localStorage.setItem('pinpoint_custom_paper_h', state.customPaperH.toString());
+        localStorage.setItem('pinpoint_badge_preset', state.badgePreset);
+        localStorage.setItem('pinpoint_visible_mm', state.visibleMm.toString());
+        localStorage.setItem('pinpoint_cut_mm', state.cutMm.toString());
         localStorage.setItem('pinpoint_orient', state.orientation);
         localStorage.setItem('pinpoint_margin', state.marginMm.toString());
         localStorage.setItem('pinpoint_gap', state.gapMm.toString());
@@ -2845,6 +2941,9 @@
         } catch (queueErr) {
           console.warn('Could not save queue to localStorage:', queueErr);
         }
+
+        // Asynchronously persist full-fidelity 300 DPI queue to IndexedDB
+        PinPointDB.saveQueue(state.queue).catch(() => {});
       } catch (err) {
         console.warn('Could not save to localStorage:', err);
       }
@@ -2885,6 +2984,7 @@
 
       // Update preset chips
       updatePresetChips(lang);
+      updateAddToSheetButtonUI();
       updatePresetBadgeText();
       updateBleedCalc();
       renderPaperSelectOptions();
@@ -2928,6 +3028,17 @@
       const chipSubCustom = document.getElementById('chipSubCustom');
       if (chipCustom) chipCustom.textContent = dict.presetCustomFace;
       if (chipSubCustom) chipSubCustom.textContent = dict.presetCustomSub;
+    }
+
+    function updateAddToSheetButtonUI() {
+      const textSpan = document.getElementById('addToSheetBtnText');
+      if (!textSpan) return;
+      const dict = I18N[state.lang];
+      if (state.editingBadgeId) {
+        textSpan.textContent = dict.updateInSheet;
+      } else {
+        textSpan.textContent = dict.addToSheet;
+      }
     }
 
     function updatePresetBadgeText() {
@@ -2997,12 +3108,15 @@
         const row = document.createElement('div');
         row.className = `catalog-item-row ${isSelected ? 'selected' : ''}`;
         
+        const desc = state.lang === 'uk' ? (spec.descUk || spec.desc) : (spec.descEn || spec.desc);
+        const name = key === 'custom' ? I18N[state.lang].customPaperName : spec.name;
+
         row.innerHTML = `
           <div class="catalog-item-meta">
-            <span class="catalog-item-name">${spec.name}</span>
-            <span class="catalog-item-dim">${spec.desc || (spec.w + ' × ' + spec.h + ' mm')}</span>
+            <span class="catalog-item-name">${name}</span>
+            <span class="catalog-item-dim">${desc || (spec.w + ' × ' + spec.h + ' mm')}</span>
           </div>
-          <button type="button" class="catalog-fav-star-btn ${isFav ? 'starred' : ''}" title="Toggle favorite">
+          <button type="button" class="catalog-fav-star-btn ${isFav ? 'starred' : ''}" title="${isFav ? I18N[state.lang].remFavTooltip : I18N[state.lang].addFavTooltip}">
             ${isFav ? '★' : '☆'}
           </button>
         `;
@@ -3137,6 +3251,13 @@
       const customBox = document.getElementById('customPaperRow');
       if (key === 'custom') {
         customBox.classList.add('visible');
+        setTimeout(() => {
+          const wInput = document.getElementById('customPaperWInput');
+          if (wInput) {
+            wInput.focus();
+            wInput.select();
+          }
+        }, 80);
       } else {
         customBox.classList.remove('visible');
       }
@@ -3330,8 +3451,10 @@
             updateRotationUI();
 
             // 3. Pan (Position)
-            state.imgX = initialImgX + (curMidX - initialMidX);
-            state.imgY = initialImgY + (curMidY - initialMidY);
+            const rect = cropCanvas.getBoundingClientRect();
+            const coordScale = rect.width ? (CROP_LOGICAL_SIZE / rect.width) : 1;
+            state.imgX = initialImgX + (curMidX - initialMidX) * coordScale;
+            state.imgY = initialImgY + (curMidY - initialMidY) * coordScale;
 
             drawCropCanvas();
             return;
@@ -3339,8 +3462,10 @@
 
           if (isPointerDown && activePointers.size === 1) {
             if (activeDragType === 'move') {
-              state.imgX = imgStartX + (e.clientX - dragStartX);
-              state.imgY = imgStartY + (e.clientY - dragStartY);
+              const rect = cropCanvas.getBoundingClientRect();
+              const coordScale = rect.width ? (CROP_LOGICAL_SIZE / rect.width) : 1;
+              state.imgX = imgStartX + (e.clientX - dragStartX) * coordScale;
+              state.imgY = imgStartY + (e.clientY - dragStartY) * coordScale;
               drawCropCanvas();
             } else if (activeDragType === 'rotate') {
               const curAngle = Math.atan2(coords.y - cy, coords.x - cx);
@@ -3496,6 +3621,9 @@
         const img = new Image();
         img.onload = () => {
           state.image = img;
+          state.sourceImageSrc = e.target.result;
+          state.editingBadgeId = null;
+          updateAddToSheetButtonUI();
           state.imgName = file.name.replace(/\.[^/.]+$/, "") || 'Pin Badge';
           state.imgX = 0;
           state.imgY = 0;
@@ -3760,6 +3888,9 @@
     function discardCurrentPhoto() {
       if (!state.image) return;
       state.image = null;
+      state.sourceImageSrc = null;
+      state.editingBadgeId = null;
+      updateAddToSheetButtonUI();
       state.imgName = 'Pin Badge';
       state.imgX = 0;
       state.imgY = 0;
@@ -3790,6 +3921,9 @@
       const highResDataUrl = generateHighResBadgeDataUrl(state.cutMm, state.visibleMm);
       if (!highResDataUrl) return;
 
+      const isEditing = Boolean(state.editingBadgeId);
+      const badgeId = state.editingBadgeId || `pin_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+
       // Create a small lightweight thumbnail (120px) for quick queue rendering
       const thumbCanvas = document.createElement('canvas');
       thumbCanvas.width = 120;
@@ -3805,24 +3939,45 @@
         tCtx.restore();
 
         const badgeItem = {
-          id: `pin_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+          id: badgeId,
           name: state.imgName,
           visibleMm: state.visibleMm,
           cutMm: state.cutMm,
           count: state.copies,
+          sourceUrl: state.sourceImageSrc || highResDataUrl,
+          transform: {
+            imgX: state.imgX,
+            imgY: state.imgY,
+            zoom: state.zoom,
+            rotation: state.rotation
+          },
           thumbUrl: thumbCanvas.toDataURL('image/png'),
           highResUrl: highResDataUrl
         };
 
-        state.queue.push(badgeItem);
+        if (isEditing) {
+          const idx = state.queue.findIndex(it => it.id === badgeId);
+          if (idx !== -1) {
+            state.queue[idx] = badgeItem;
+          } else {
+            state.queue.push(badgeItem);
+          }
+          state.editingBadgeId = null;
+          updateAddToSheetButtonUI();
+        } else {
+          state.queue.push(badgeItem);
+        }
+
         renderQueueList();
         saveState();
         recalculatePackingAndRender();
         triggerHaptic('success');
 
-        const msg = state.lang === 'uk'
-          ? I18N.uk.toastAdded.replace('{count}', state.copies)
-          : I18N.en.toastAdded.replace('{count}', state.copies);
+        const msg = isEditing
+          ? (state.lang === 'uk' ? I18N.uk.toastUpdated : I18N.en.toastUpdated)
+          : (state.lang === 'uk'
+              ? I18N.uk.toastAdded.replace('{count}', state.copies)
+              : I18N.en.toastAdded.replace('{count}', state.copies));
         const actionText = state.lang === 'uk' ? I18N.uk.viewSheetAction : I18N.en.viewSheetAction;
         showToast(msg, actionText, () => switchMobileTab('sheet'));
       };
@@ -3897,6 +4052,10 @@
             item.count--;
           } else {
             state.queue.splice(index, 1);
+            if (state.editingBadgeId === item.id) {
+              state.editingBadgeId = null;
+              updateAddToSheetButtonUI();
+            }
           }
           renderQueueList();
           saveState();
@@ -3916,6 +4075,10 @@
         card.querySelector('.queue-del-btn').addEventListener('click', (e) => {
           e.stopPropagation();
           state.queue.splice(index, 1);
+          if (state.editingBadgeId === item.id) {
+            state.editingBadgeId = null;
+            updateAddToSheetButtonUI();
+          }
           renderQueueList();
           saveState();
           recalculatePackingAndRender();
@@ -3928,6 +4091,7 @@
 
     function loadBadgeIntoEditor(item) {
       if (!item) return;
+      state.editingBadgeId = item.id;
       state.visibleMm = item.visibleMm;
       state.cutMm = item.cutMm;
       
@@ -3955,21 +4119,30 @@
       const img = new Image();
       img.onload = () => {
         state.image = img;
-        state.imgX = 0;
-        state.imgY = 0;
-        state.zoom = 1.0;
-        state.rotation = 0;
+        state.sourceImageSrc = item.sourceUrl || item.highResUrl;
+        if (item.transform) {
+          state.imgX = item.transform.imgX;
+          state.imgY = item.transform.imgY;
+          state.zoom = item.transform.zoom;
+          state.rotation = item.transform.rotation;
+        } else {
+          state.imgX = 0;
+          state.imgY = 0;
+          state.zoom = 1.0;
+          state.rotation = 0;
+        }
         updateZoomUI();
         updateRotationUI();
         updateBleedCalc();
         updatePresetBadgeText();
+        updateAddToSheetButtonUI();
         const emptyOverlay = document.getElementById('canvasEmptyOverlay');
         if (emptyOverlay) emptyOverlay.classList.add('hidden');
         drawCropCanvas();
         switchMobileTab('editor');
         showToast(I18N[state.lang].badgeLoadedToast);
       };
-      img.src = item.highResUrl || item.thumbUrl;
+      img.src = item.sourceUrl || item.highResUrl || item.thumbUrl;
     }
 
     /* ========================================================================
@@ -4160,8 +4333,30 @@
        ======================================================================== */
     const sheetCanvas = document.getElementById('sheetCanvas');
     const sheetCtx = sheetCanvas.getContext('2d');
+    const sheetImageCache = new Map();
+    let sheetRenderToken = 0;
 
-    function renderSheetCanvas() {
+    function getCachedSheetImage(url) {
+      if (!url) return Promise.resolve(null);
+      if (sheetImageCache.has(url)) {
+        const cached = sheetImageCache.get(url);
+        if (cached && cached.complete && cached.naturalWidth > 0) {
+          return Promise.resolve(cached);
+        }
+      }
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          sheetImageCache.set(url, img);
+          resolve(img);
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+      });
+    }
+
+    async function renderSheetCanvas() {
+      const token = ++sheetRenderToken;
       const paper = getEffectivePaperDimensions();
       const aspectRatio = paper.w / paper.h;
 
@@ -4198,31 +4393,26 @@
       // Render placed badges on current page
       if (state.packedPages.length > 0 && state.packedPages[state.currentPageIdx]) {
         const curPage = state.packedPages[state.currentPageIdx];
+        const loadedImages = await Promise.all(curPage.map(b => getCachedSheetImage(b.highResUrl)));
+        if (token !== sheetRenderToken) return;
 
-        curPage.forEach((badge) => {
+        curPage.forEach((badge, idx) => {
           const cx = badge.x * pxPerMm;
           const cy = badge.y * pxPerMm;
           const cutRadiusPx = badge.radius * pxPerMm;
           const faceRadiusPx = (badge.visibleMm / 2) * pxPerMm;
+          const img = loadedImages[idx];
 
-          // 1. Draw badge raster image
-          if (badge.highResUrl) {
-            const img = new Image();
-            img.onload = () => {
-              sheetCtx.save();
-              sheetCtx.beginPath();
-              sheetCtx.arc(cx, cy, cutRadiusPx, 0, Math.PI * 2);
-              sheetCtx.clip();
-              sheetCtx.drawImage(img, cx - cutRadiusPx, cy - cutRadiusPx, cutRadiusPx * 2, cutRadiusPx * 2);
-              sheetCtx.restore();
-
-              // Draw guide lines on top of image
-              drawBadgeGuides(cx, cy, cutRadiusPx, faceRadiusPx);
-            };
-            img.src = badge.highResUrl;
-          } else {
-            drawBadgeGuides(cx, cy, cutRadiusPx, faceRadiusPx);
+          if (img) {
+            sheetCtx.save();
+            sheetCtx.beginPath();
+            sheetCtx.arc(cx, cy, cutRadiusPx, 0, Math.PI * 2);
+            sheetCtx.clip();
+            sheetCtx.drawImage(img, cx - cutRadiusPx, cy - cutRadiusPx, cutRadiusPx * 2, cutRadiusPx * 2);
+            sheetCtx.restore();
           }
+
+          drawBadgeGuides(cx, cy, cutRadiusPx, faceRadiusPx);
         });
       }
     }
@@ -4261,7 +4451,7 @@
       const dlBtn = document.getElementById('downloadPdfBtn');
       const originalText = dlBtn.innerHTML;
       dlBtn.disabled = true;
-      dlBtn.innerHTML = `⏳ <span>${state.lang === 'uk' ? I18N.uk.generatingPdf : I18N.en.generatingPdf}</span>`;
+      dlBtn.innerHTML = `<svg class="spin-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg> <span>${state.lang === 'uk' ? I18N.uk.generatingPdf : I18N.en.generatingPdf}</span>`;
 
       try {
         const { jsPDF } = window.jspdf;
@@ -4274,16 +4464,6 @@
           format: [paper.w, paper.h],
           compress: true
         });
-
-        // Helper to load image as HTMLImageElement
-        const loadImagePromise = (url) => {
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = () => resolve(null);
-            img.src = url;
-          });
-        };
 
         for (let pIdx = 0; pIdx < state.packedPages.length; pIdx++) {
           if (pIdx > 0) {
@@ -4337,7 +4517,7 @@
       const dlImgBtn = document.getElementById('downloadImageBtn');
       const originalText = dlImgBtn.innerHTML;
       dlImgBtn.disabled = true;
-      dlImgBtn.innerHTML = `⏳ <span>${state.lang === 'uk' ? I18N.uk.generatingImage : I18N.en.generatingImage}</span>`;
+      dlImgBtn.innerHTML = `<svg class="spin-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg> <span>${state.lang === 'uk' ? I18N.uk.generatingImage : I18N.en.generatingImage}</span>`;
 
       try {
         const paper = getEffectivePaperDimensions();
@@ -4345,15 +4525,6 @@
         const pxPerMm = 300 / 25.4;
         const targetW = Math.round(paper.w * pxPerMm);
         const targetH = Math.round(paper.h * pxPerMm);
-
-        const loadImagePromise = (url) => {
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = () => resolve(null);
-            img.src = url;
-          });
-        };
 
         const totalBadges = state.queue.reduce((acc, it) => acc + it.count, 0);
 
@@ -4386,9 +4557,9 @@
           ctx.stroke();
           ctx.restore();
 
-          // 3. Pre-load all badge images for this page in parallel
+          // 3. Pre-load all badge images for this page in parallel via cache
           const badgeImages = await Promise.all(
-            pageBadges.map((b) => (b.highResUrl ? loadImagePromise(b.highResUrl) : Promise.resolve(null)))
+            pageBadges.map((b) => getCachedSheetImage(b.highResUrl))
           );
 
           // 4. Render each badge and its vector guidelines
@@ -4454,7 +4625,7 @@
         showToast(I18N[state.lang].toastImageSuccess);
       } catch (err) {
         console.error('Image export error:', err);
-        showToast('Помилка збереження зображення: ' + err.message);
+        showToast((state.lang === 'uk' ? I18N.uk.toastImageError : I18N.en.toastImageError) + ': ' + err.message);
       } finally {
         dlImgBtn.disabled = false;
         dlImgBtn.innerHTML = originalText;
@@ -4464,15 +4635,15 @@
     /* ========================================================================
        12. DIRECT BROWSER PRINT
        ======================================================================== */
-    function printCurrentSheet() {
+    async function printCurrentSheet() {
       if (state.queue.length === 0 || state.packedPages.length === 0) {
         showToast(I18N[state.lang].toastNeedBadgesForPrint);
         return;
       }
-      renderSheetCanvas();
+      await renderSheetCanvas();
       setTimeout(() => {
         window.print();
-      }, 60);
+      }, 50);
     }
 
     /* ========================================================================
@@ -4498,14 +4669,28 @@
         });
       });
 
-      // Drag Mode Pills (Auto, Move, Rotate, Zoom)
-      document.querySelectorAll('.mode-pill-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.mode-pill-btn').forEach((b) => b.classList.remove('active'));
-          btn.classList.add('active');
-          state.dragMode = btn.getAttribute('data-mode');
-          drawCropCanvas();
+      // Modal backdrop dismissal
+      const paperModal = document.getElementById('paperPickerModal');
+      if (paperModal) {
+        paperModal.addEventListener('click', (e) => {
+          if (e.target === paperModal) closePaperPickerModal();
         });
+      }
+      const confirmModal = document.getElementById('confirmModal');
+      if (confirmModal) {
+        confirmModal.addEventListener('click', (e) => {
+          if (e.target === confirmModal) confirmModal.classList.remove('open');
+        });
+      }
+
+      // Close open modals on Escape key
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closePaperPickerModal();
+          if (confirmModal && confirmModal.classList.contains('open')) {
+            confirmModal.classList.remove('open');
+          }
+        }
       });
 
       // Badge Size Presets buttons
@@ -4744,10 +4929,12 @@
       // Custom Paper Dimensions
       document.getElementById('customPaperWInput').addEventListener('input', (e) => {
         state.customPaperW = parseFloat(e.target.value) || 210;
+        saveState();
         recalculatePackingAndRender();
       });
       document.getElementById('customPaperHInput').addEventListener('input', (e) => {
         state.customPaperH = parseFloat(e.target.value) || 297;
+        saveState();
         recalculatePackingAndRender();
       });
 
@@ -4943,6 +5130,31 @@
       const gapInput = document.getElementById('gapInput');
       if (gapInput) gapInput.value = state.gapMm;
 
+      // Restore custom paper input values & visibility
+      const customPaperRow = document.getElementById('customPaperRow');
+      if (customPaperRow) customPaperRow.classList.toggle('visible', state.paperKey === 'custom');
+      const customWIn = document.getElementById('customPaperWInput');
+      if (customWIn) customWIn.value = state.customPaperW;
+      const customHIn = document.getElementById('customPaperHInput');
+      if (customHIn) customHIn.value = state.customPaperH;
+
+      // Restore custom badge inputs & visibility
+      const customSizeBox = document.getElementById('customSizeBox');
+      if (customSizeBox) customSizeBox.classList.toggle('visible', state.badgePreset === 'custom');
+      const customVisIn = document.getElementById('customVisibleInput');
+      if (customVisIn) customVisIn.value = state.visibleMm;
+      const customCutIn = document.getElementById('customCutInput');
+      if (customCutIn) customCutIn.value = state.cutMm;
+
+      // Asynchronously restore high-res image data from IndexedDB
+      hydrateQueueFromIndexedDB();
+
+      window.state = state;
+      window.BADGE_PRESETS = BADGE_PRESETS;
+      window.I18N = I18N;
+      window.packCircles = packCircles;
+      window.switchMobileTab = switchMobileTab;
+      window.loadBadgeIntoEditor = loadBadgeIntoEditor;
       window.openPaperPickerModal = openPaperPickerModal;
       window.closePaperPickerModal = closePaperPickerModal;
       window.filterPaperCategory = filterPaperCategory;

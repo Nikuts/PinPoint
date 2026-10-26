@@ -169,4 +169,58 @@ describe('UI: Document & Badges Flow', () => {
       assert.ok(!emojiRegex.test(cleanContent), `Content should not have emojis: ${cleanContent.slice(0, 40)}`);
     });
   });
+
+  it('updates existing queue item when re-edited instead of creating duplicates', async () => {
+    const { app, elements } = createDOMEnvironment();
+
+    const mockItem = {
+      id: 'pin_edit_test',
+      name: 'Badge To Edit',
+      visibleMm: 44,
+      cutMm: 54,
+      count: 3,
+      thumbUrl: 'data:image/png;base64,t1',
+      highResUrl: 'data:image/png;base64,h1',
+      sourceUrl: 'data:image/png;base64,s1',
+      transform: { imgX: 10, imgY: 20, zoom: 1.2, rotation: 45 }
+    };
+
+    app.state.queue = [mockItem];
+    app.loadBadgeIntoEditor(mockItem);
+    await new Promise(r => setTimeout(r, 20));
+
+    assert.strictEqual(app.state.editingBadgeId, 'pin_edit_test');
+    assert.strictEqual(app.state.visibleMm, 44);
+    assert.strictEqual(app.state.cutMm, 54);
+    assert.strictEqual(app.state.copies, 3);
+    assert.strictEqual(app.state.imgX, 10);
+    assert.strictEqual(app.state.imgY, 20);
+    assert.strictEqual(app.state.zoom, 1.2);
+    assert.strictEqual(app.state.rotation, 45);
+
+    // Modify copies and re-save
+    app.state.copies = 5;
+    const addBtn = elements.get('addToSheetBtn');
+    addBtn.click();
+    await new Promise(r => setTimeout(r, 20));
+
+    assert.strictEqual(app.state.queue.length, 1, 'Queue length must remain 1 (updated in place)');
+    assert.strictEqual(app.state.queue[0].id, 'pin_edit_test');
+    assert.strictEqual(app.state.queue[0].count, 5);
+    assert.strictEqual(app.state.editingBadgeId, null, 'Editing badge ID must reset after updating');
+  });
+
+  it('closes modals on Escape key', () => {
+    const { app, elements, windowListeners } = createDOMEnvironment();
+
+    app.openPaperPickerModal();
+    const modal = elements.get('paperPickerModal');
+    assert.ok(modal.classList.contains('active'));
+
+    const keydownHandlers = windowListeners['keydown'] || [];
+    assert.ok(keydownHandlers.length > 0, 'Must register keydown handler');
+    keydownHandlers.forEach(fn => fn({ key: 'Escape' }));
+
+    assert.ok(!modal.classList.contains('active'), 'Modal must close on Escape');
+  });
 });

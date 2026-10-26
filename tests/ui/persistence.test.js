@@ -78,4 +78,33 @@ describe('UI: Persistence & LocalStorage Safeguards', () => {
     assert.strictEqual(app.state.queue.length, 1);
     assert.strictEqual(app.state.queue[0].highResUrl, 'data:image/png;base64,thumb123');
   });
+
+  it('saves and restores custom paper dimensions and custom badge presets', () => {
+    const { app, storage, storageMap } = createDOMEnvironment();
+
+    app.state.paperKey = 'custom';
+    app.state.customPaperW = 180;
+    app.state.customPaperH = 250;
+    app.state.badgePreset = 'custom';
+    app.state.visibleMm = 52;
+    app.state.cutMm = 64;
+
+    app.saveState();
+
+    assert.strictEqual(storage.getItem('pinpoint_custom_paper_w'), '180');
+    assert.strictEqual(storage.getItem('pinpoint_custom_paper_h'), '250');
+    assert.strictEqual(storage.getItem('pinpoint_badge_preset'), 'custom');
+    assert.strictEqual(storage.getItem('pinpoint_visible_mm'), '52');
+    assert.strictEqual(storage.getItem('pinpoint_cut_mm'), '64');
+
+    const env2 = createDOMEnvironment({ storage: storageMap });
+    env2.app.loadSavedState();
+
+    assert.strictEqual(env2.app.state.paperKey, 'custom');
+    assert.strictEqual(env2.app.state.customPaperW, 180);
+    assert.strictEqual(env2.app.state.customPaperH, 250);
+    assert.strictEqual(env2.app.state.badgePreset, 'custom');
+    assert.strictEqual(env2.app.state.visibleMm, 52);
+    assert.strictEqual(env2.app.state.cutMm, 64);
+  });
 });
