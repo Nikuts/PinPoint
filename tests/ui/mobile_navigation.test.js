@@ -90,4 +90,24 @@ describe('UI: Mobile Navigation & Tab Switching', () => {
     assert.strictEqual(mobSheetBadge.textContent, 7);
     assert.strictEqual(mobSheetBadge.style.display, 'inline-block');
   });
+
+  it('switches to sheet when mobileHeaderSheetBtn is clicked and syncs count', () => {
+    const { app, elements } = createDOMEnvironment();
+
+    const sheetBtn = elements.get('mobileHeaderSheetBtn');
+    const sheetPanel = elements.get('sheetPanel');
+    const headerCount = elements.get('headerSheetCount');
+
+    assert.ok(sheetBtn, 'mobileHeaderSheetBtn must exist');
+
+    app.state.queue = [
+      { id: '1', name: 'B1', visibleMm: 58, cutMm: 70, count: 6, thumbUrl: '' }
+    ];
+    app.recalculatePackingAndRender();
+
+    assert.strictEqual(headerCount.textContent, '6');
+
+    sheetBtn.click();
+    assert.ok(sheetPanel.classList.contains('mobile-active'), 'Sheet panel must be active after clicking header sheet button');
+  });
 });

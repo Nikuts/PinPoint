@@ -210,6 +210,36 @@ describe('UI: Document & Badges Flow', () => {
     assert.strictEqual(app.state.editingBadgeId, null, 'Editing badge ID must reset after updating');
   });
 
+  it('cancels active badge editing mode when cancelEditBtn is clicked', async () => {
+    const { app, elements } = createDOMEnvironment();
+
+    const mockItem = {
+      id: 'pin_cancel_test',
+      name: 'Badge To Cancel',
+      visibleMm: 58,
+      cutMm: 70,
+      count: 2,
+      thumbUrl: 'data:image/png;base64,t1',
+      highResUrl: 'data:image/png;base64,h1'
+    };
+
+    app.loadBadgeIntoEditor(mockItem);
+    await new Promise(r => setTimeout(r, 20));
+
+    const banner = elements.get('editingBadgeBanner');
+    const cancelBtn = elements.get('cancelEditBtn');
+    const addBtn = elements.get('addToSheetBtn');
+
+    assert.strictEqual(app.state.editingBadgeId, 'pin_cancel_test');
+    assert.ok(!banner.classList.contains('hidden'), 'Banner should be visible during editing');
+    assert.ok(addBtn.classList.contains('editing-mode'), 'Add button should have editing-mode class');
+
+    cancelBtn.click();
+    assert.strictEqual(app.state.editingBadgeId, null, 'Editing badge ID should be cleared');
+    assert.ok(banner.classList.contains('hidden'), 'Banner should be hidden after cancel');
+    assert.ok(!addBtn.classList.contains('editing-mode'), 'Add button should not have editing-mode class');
+  });
+
   it('closes modals on Escape key', () => {
     const { app, elements, windowListeners } = createDOMEnvironment();
 
