@@ -92,13 +92,21 @@ function createDOMEnvironment(options = {}) {
       },
 
       value: '',
-      textContent: '',
+      _textContent: undefined,
+      get textContent() {
+        if (el._textContent !== undefined) return el._textContent;
+        return (el._innerHTML || '').replace(/<[^>]*>/g, '').trim();
+      },
+      set textContent(val) {
+        el._textContent = val;
+      },
       _innerHTML: '',
       get innerHTML() {
         return el._innerHTML || '';
       },
       set innerHTML(val) {
         el._innerHTML = String(val);
+        el._textContent = undefined;
         if (val === '') {
           el.children = [];
           if (el.subElements) el.subElements.clear();
@@ -323,6 +331,10 @@ function createDOMEnvironment(options = {}) {
       setLanguage,
       selectPaperFormat,
       toggleFavoritePaper,
+      openPaperPickerModal,
+      closePaperPickerModal,
+      renderFavoriteChips,
+      renderPaperCatalogList,
       loadImageFile,
       drawCropCanvas,
       addBadgeToQueue,

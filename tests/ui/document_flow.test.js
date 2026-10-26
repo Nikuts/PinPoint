@@ -118,4 +118,55 @@ describe('UI: Document & Badges Flow', () => {
       done();
     }, 100);
   });
+
+  it('opens and closes paper catalog modal and selects paper format', () => {
+    const { app, elements } = createDOMEnvironment();
+
+    const openBtn = elements.get('openPaperCatalogBtn');
+    const modal = elements.get('paperPickerModal');
+    assert.ok(openBtn, 'openPaperCatalogBtn must exist');
+    assert.ok(modal, 'paperPickerModal must exist');
+
+    openBtn.click();
+    assert.ok(modal.classList.contains('active'), 'Modal must have active class when opened');
+
+    app.closePaperPickerModal();
+    assert.ok(!modal.classList.contains('active'), 'Modal must not have active class when closed');
+
+    // Select format
+    app.selectPaperFormat('10x15');
+    assert.strictEqual(app.state.paperKey, '10x15');
+    const dims = app.getEffectivePaperDimensions();
+    assert.strictEqual(dims.w, 101.6);
+    assert.strictEqual(dims.h, 152.4);
+  });
+
+  it('renders favorite chips with full non-truncated labels', () => {
+    const { app, elements } = createDOMEnvironment();
+
+    app.state.favorites = ['A4', '10x15', '13x18'];
+    app.renderFavoriteChips();
+
+    const favBar = elements.get('favChipsBar');
+    assert.ok(favBar, 'favChipsBar must exist');
+    assert.strictEqual(favBar.children.length, 3);
+    assert.ok(favBar.children[1].textContent.includes('10×15 cm'), 'Chip must include full "10×15 cm"');
+    assert.ok(favBar.children[2].textContent.includes('13×18 cm'), 'Chip must include full "13×18 cm"');
+  });
+
+  it('contains zero emojis across UI button and navigation tags', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const html = fs.readFileSync(path.resolve(__dirname, '../../index.html'), 'utf8');
+
+    // Extract all button and nav tags
+    const buttonTags = [...html.matchAll(/<(?:button|nav)[^>]*>([\s\S]*?)<\/(?:button|nav)>/g)].map(m => m[1]);
+    const emojiRegex = /[\uD83C-\uDBFF\uDC00-\uDFFF\u2600-\u27BF]/;
+
+    buttonTags.forEach((content) => {
+      // Exclude star characters or triangle notch
+      const cleanContent = content.replace(/[★☆▲]/g, '');
+      assert.ok(!emojiRegex.test(cleanContent), `Content should not have emojis: ${cleanContent.slice(0, 40)}`);
+    });
+  });
 });

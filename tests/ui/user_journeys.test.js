@@ -274,12 +274,12 @@ describe('UI: Full End-to-End User Journeys', () => {
     langBtn.click();
     assert.strictEqual(app.state.lang, toggledLang);
     assert.strictEqual(langLabel.textContent, toggledLang.toUpperCase());
-    assert.strictEqual(langFlag.textContent, toggledLang === 'uk' ? '🇺🇦' : '🇬🇧');
+    assert.ok(langFlag.innerHTML.includes('svg'));
 
     langBtn.click();
     assert.strictEqual(app.state.lang, initialLang);
     assert.strictEqual(langLabel.textContent, initialLang.toUpperCase());
-    assert.strictEqual(langFlag.textContent, initialLang === 'uk' ? '🇺🇦' : '🇬🇧');
+    assert.ok(langFlag.innerHTML.includes('svg'));
 
     // 2. PWA Install lifecycle
     const pwaBtn = elements.get('pwaInstallBtn');

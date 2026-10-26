@@ -25,6 +25,9 @@
   </script>
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
   <!-- jsPDF v2.5.1: Local bundle with CDN fallback -->
   <script src="jspdf.umd.min.js"></script>
@@ -36,50 +39,52 @@
 
   <style>
     /* ==========================================================================
-       1. CSS VARIABLES & DESIGN SYSTEM (Modern Dark Dashboard)
+       1. CSS VARIABLES & DESIGN SYSTEM (Apple iOS / Modern Studio Pro Dark)
        ========================================================================== */
     :root {
       /* Color Scheme */
       color-scheme: dark;
-      --bg-base: #090d16;
-      --bg-surface: #0f172a;
-      --bg-card: #162032;
-      --bg-card-hover: #1e293b;
-      --bg-input: #0b1120;
+      --bg-base: #000000;
+      --bg-surface: #09090b;
+      --bg-card: #121215;
+      --bg-card-hover: #18181b;
+      --bg-input: #18181b;
       
-      --border-subtle: #243247;
-      --border-focus: #0ea5e9;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: #3b82f6;
       
-      --accent: #0ea5e9;
-      --accent-hover: #38bdf8;
-      --accent-glow: rgba(14, 165, 233, 0.35);
+      --accent: #2563eb;
+      --accent-hover: #3b82f6;
+      --accent-glow: rgba(37, 99, 235, 0.25);
       
-      --cyan-face: #00f0ff;
-      --cut-guide: #94a3b8;
+      --cyan-face: #38bdf8;
+      --cut-guide: #a1a1aa;
       --notch-color: #f59e0b;
       
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
       
       --danger: #ef4444;
       --danger-hover: #f87171;
       --success: #10b981;
-      --star-color: #fbbf24;
+      --star-color: #f59e0b;
       
       /* Typography & Layout */
-      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
+      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
       --radius-full: 9999px;
       
-      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-      --shadow-glow: 0 0 20px var(--accent-glow);
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+      --shadow-glow: 0 0 25px var(--accent-glow);
       
-      --transition-fast: 0.15s ease;
-      --transition-normal: 0.25s ease;
+      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       
       accent-color: var(--accent);
     }
@@ -116,6 +121,24 @@
       overflow-x: hidden;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* Icon Utilities */
+    .btn-icon {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .panel-title-icon {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.35rem;
+      color: var(--accent);
+    }
+    .tab-icon-svg {
+      display: block;
+      margin: 0 auto 0.2rem auto;
+      stroke: currentColor;
     }
 
     /* ==========================================================================
@@ -1038,6 +1061,27 @@
       gap: 0.5rem;
     }
 
+    .catalog-trigger-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--accent-hover);
+      border-radius: var(--radius-full);
+      padding: 0.3rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all var(--transition-fast);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .catalog-trigger-btn:hover {
+      background: rgba(37, 99, 235, 0.15);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
     /* Starred Favorites Quick Chips Bar */
     .fav-chips-bar {
       display: flex;
@@ -1047,31 +1091,38 @@
     }
 
     .fav-chip-tag {
-      background: var(--bg-surface);
+      background: #18181b;
       border: 1px solid var(--border-subtle);
       color: var(--text-muted);
       border-radius: var(--radius-full);
-      padding: 0.25rem 0.6rem;
+      padding: 0.3rem 0.7rem;
       font-size: 0.75rem;
+      font-family: var(--font-mono);
       font-weight: 700;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 0.35rem;
       transition: all var(--transition-fast);
+      white-space: nowrap;
     }
     .fav-chip-tag:hover {
       border-color: var(--accent);
       color: var(--text-main);
+      background: #27272a;
     }
     .fav-chip-tag.active {
-      background: rgba(14, 165, 233, 0.2);
-      border-color: var(--accent);
-      color: var(--accent-hover);
+      background: #ffffff;
+      border-color: #ffffff;
+      color: #000000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
     .fav-chip-tag .star-icon {
       color: var(--star-color);
       font-size: 0.8rem;
+    }
+    .fav-chip-tag.active .star-icon {
+      color: #d97706;
     }
 
     /* Paper Selection Dropdown & Controls */
@@ -1318,22 +1369,164 @@
       font-weight: 700;
       min-width: 18px;
       text-align: center;
+      font-family: var(--font-mono);
+    }
+
+    .queue-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-left: auto;
+    }
+
+    .queue-edit-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .queue-edit-btn:hover {
+      background: rgba(37, 99, 235, 0.2);
+      border-color: var(--accent);
+      color: #ffffff;
     }
 
     .queue-del-btn {
-      background: none;
-      border: none;
-      color: var(--text-dim);
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border-radius: var(--radius-sm);
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      padding: 0.2rem;
-      font-size: 0.9rem;
-      transition: color var(--transition-fast);
-      position: absolute;
-      top: 0.3rem;
-      right: 0.35rem;
+      transition: all var(--transition-fast);
     }
     .queue-del-btn:hover {
-      color: var(--danger-hover);
+      background: rgba(239, 68, 68, 0.25);
+      border-color: var(--danger);
+      color: #ffffff;
+    }
+
+    /* ==========================================================================
+       PAPER FORMAT CATALOG & FAVORITES MODAL
+       ========================================================================== */
+    .paper-catalog-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .paper-catalog-modal.active {
+      display: flex;
+    }
+    .paper-catalog-box {
+      background: #0f0f12;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      padding: 1.25rem;
+    }
+    .catalog-tabs-row {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding: 0.75rem 0;
+      scrollbar-width: none;
+    }
+    .catalog-tabs-row::-webkit-scrollbar { display: none; }
+    .catalog-tab-btn {
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #18181c;
+      color: #a1a1aa;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .catalog-tab-btn.active {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+    .catalog-list-wrap {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+      padding-right: 0.25rem;
+    }
+    .catalog-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.85rem;
+      background: #141417;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .catalog-item-row:hover {
+      background: #1c1c20;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .catalog-item-row.selected {
+      border-color: var(--accent);
+      background: rgba(37, 99, 235, 0.12);
+    }
+    .catalog-item-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .catalog-item-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .catalog-item-dim {
+      font-size: 0.7rem;
+      color: #a1a1aa;
+      font-family: var(--font-mono);
+    }
+    .catalog-fav-star-btn {
+      background: none;
+      border: none;
+      font-size: 1.15rem;
+      color: #52525b;
+      cursor: pointer;
+      padding: 0.25rem;
+      transition: transform 0.15s ease, color 0.15s ease;
+    }
+    .catalog-fav-star-btn.starred {
+      color: #f59e0b;
     }
 
     /* ==========================================================================
@@ -1831,13 +2024,14 @@
 
       <div class="header-actions">
         <!-- PWA Install Prompt Button -->
-        <button id="pwaInstallBtn" class="install-pwa-btn" data-i18n="installApp">
-          📲 Встановити додаток
+        <button id="pwaInstallBtn" class="install-pwa-btn" data-i18n-title="installApp">
+          <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span data-i18n="installApp">Встановити додаток</span>
         </button>
 
         <!-- Language Switcher -->
         <button id="langToggleBtn" class="lang-toggle-btn" data-i18n-title="langToggleTooltip" title="Switch to English">
-          <span id="langFlag">🇺🇦</span>
+          <span id="langFlag" class="lang-flag-icon"><svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
           <span id="langLabel">UK</span>
         </button>
       </div>
@@ -1852,7 +2046,8 @@
     <section id="editorPanel" class="dashboard-panel mobile-tab-content mobile-active">
       <div class="panel-header">
         <h2 class="panel-title">
-          ✂️ <span data-i18n="navEditor">Редактор значка</span>
+          <svg class="panel-title-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+          <span data-i18n="navEditor">Редактор значка</span>
         </h2>
         <span class="panel-title-badge" id="currentPresetBadge">Ø 58/70 мм</span>
       </div>
@@ -1922,10 +2117,12 @@
           </div>
           <div class="file-buttons-row">
             <label for="fileInput" class="file-select-btn gallery-main-btn" id="browsePhotoBtn">
-              📁 <span data-i18n="galleryBtn">Галерея</span>
+              <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span data-i18n="galleryBtn">Галерея</span>
             </label>
             <label for="cameraInput" class="file-select-btn camera-btn" id="cameraPhotoBtn">
-              📷 <span data-i18n="cameraBtn">Камера</span>
+              <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span data-i18n="cameraBtn">Камера</span>
             </label>
           </div>
         </div>
@@ -1942,7 +2139,8 @@
 
       <!-- Compact Gesture Hint -->
       <div class="crop-hint-text">
-        💡 <span data-i18n="gestureHint">1 палець — рух • 2 пальці — масштаб та поворот • ручка ⟳ — обертання</span>
+        <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span data-i18n="gestureHint">1 палець — рух • 2 пальці — масштаб та поворот • ручка ⟳ — обертання</span>
       </div>
 
       <!-- Accessible off-screen file & camera inputs -->
@@ -1954,16 +2152,20 @@
         <!-- Quick Image Actions -->
         <div class="crop-actions-row">
           <button type="button" class="mini-action-btn" id="centerImgBtn" data-i18n-title="centerImgTooltip" title="Центрувати фото">
-            🎯 <span data-i18n="centerImg">Центр</span>
+            <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+            <span data-i18n="centerImg">Центр</span>
           </button>
           <button type="button" class="mini-action-btn" id="fitFaceBtn" data-i18n-title="fitFaceTooltip" title="Вписати фото у лицьову зону значка">
-            📐 <span data-i18n="fitFace">Вписати</span>
+            <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            <span data-i18n="fitFace">Вписати</span>
           </button>
           <label for="fileInput" class="mini-action-btn" id="replaceImgBtn" data-i18n-title="replacePhotoTooltip" title="Замінити фото на інше">
-            🔄 <span data-i18n="replacePhoto">Замінити</span>
+            <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+            <span data-i18n="replacePhoto">Замінити</span>
           </label>
           <button type="button" class="mini-action-btn btn-danger-subtle" id="discardPhotoBtn" data-i18n-title="discardPhotoTooltip" title="Прибрати це фото">
-            🗑️ <span data-i18n="discardPhoto">Прибрати</span>
+            <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span data-i18n="discardPhoto">Прибрати</span>
           </button>
         </div>
 
@@ -1992,7 +2194,8 @@
             <button type="button" class="step-btn" id="copyIncBtn" data-i18n-title="incQtyTooltip" title="Збільшити">+</button>
           </div>
           <button type="button" class="btn-primary-add" id="addToSheetBtn">
-            ➕ <span data-i18n="addToSheet">Додати на аркуш</span>
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span data-i18n="addToSheet">Додати на аркуш</span>
           </button>
         </div>
       </div>
@@ -2003,10 +2206,12 @@
       <!-- Mobile Top Navigation Header -->
       <div class="panel-mobile-header">
         <button type="button" class="panel-back-btn" id="sheetBackToEditorBtn">
-          <span data-i18n="backToEditor">← Редактор значка</span>
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          <span data-i18n="backToEditor">Редактор значка</span>
         </button>
         <button type="button" class="mini-action-btn btn-danger-subtle" id="sheetClearDocBtn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з документа">
-          🗑 <span data-i18n="clearDocBtn">Очистити аркуш</span>
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          <span data-i18n="clearDocBtn">Очистити аркуш</span>
         </button>
       </div>
 
@@ -2014,9 +2219,15 @@
       <div class="paper-settings-card">
         <div class="paper-header-row">
           <label class="form-label" style="font-size: 0.85rem;" data-i18n="paperHeading">Формат паперу та поля:</label>
-          <div class="fav-chips-bar" id="favChipsBar">
-            <!-- Dynamically populated favorite chips -->
-          </div>
+          <button type="button" id="openPaperCatalogBtn" class="catalog-trigger-btn" onclick="openPaperPickerModal()">
+            <span data-i18n="allFormatsCatalog">Всі формати та обране...</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+        <!-- Quick Favorites Pills Bar -->
+        <div class="fav-chips-bar" id="favChipsBar">
+          <!-- Dynamically populated favorite chips -->
         </div>
 
         <div class="paper-controls-grid">
@@ -2036,10 +2247,12 @@
             <label class="form-label" data-i18n="orientationLabel">Орієнтація:</label>
             <div class="orientation-switch">
               <button type="button" class="orient-btn active" id="orientPortBtn" data-orient="portrait">
-                📄 <span data-i18n="portrait">Книжк.</span>
+                <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/></svg>
+                <span data-i18n="portrait">Книжк.</span>
               </button>
               <button type="button" class="orient-btn" id="orientLandBtn" data-orient="landscape">
-                📑 <span data-i18n="landscape">Альбом.</span>
+                <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"/></svg>
+                <span data-i18n="landscape">Альбом.</span>
               </button>
             </div>
           </div>
@@ -2074,9 +2287,13 @@
       <div class="sheet-preview-wrap">
         <div class="sheet-toolbar">
           <div class="sheet-pagination-group">
-            <button type="button" id="prevPageBtn" class="page-nav-btn" data-i18n-title="prevPageTooltip" title="Попередня сторінка" disabled>◀</button>
+            <button type="button" id="prevPageBtn" class="page-nav-btn" data-i18n-title="prevPageTooltip" title="Попередня сторінка" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
             <span id="pageIndicator" class="page-indicator-text">Стор. 1 з 1</span>
-            <button type="button" id="nextPageBtn" class="page-nav-btn" data-i18n-title="nextPageTooltip" title="Наступна сторінка" disabled>▶</button>
+            <button type="button" id="nextPageBtn" class="page-nav-btn" data-i18n-title="nextPageTooltip" title="Наступна сторінка" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
           </div>
 
           <div id="sheetStatsBadge" class="sheet-stats-badge">
@@ -2094,11 +2311,13 @@
       <div class="sheet-doc-badges-card" id="sheetDocBadgesCard">
         <div class="sheet-doc-header">
           <div class="sheet-doc-title">
-            📋 <span data-i18n="docBadgesTitle">Значки в документі:</span>
+            <svg class="panel-title-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span data-i18n="docBadgesTitle">Значки в документі:</span>
             <span id="docBadgesCountBadge" class="queue-badge-count">0 шт.</span>
           </div>
           <button type="button" class="mini-action-btn btn-danger-subtle" id="sheetClearAllBtn" data-i18n-title="clearAllTooltip" title="Очистити всі значки з документа">
-            🗑 <span data-i18n="clearDocBtn">Очистити</span>
+            <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span data-i18n="clearDocBtn">Очистити</span>
           </button>
         </div>
         <div id="docBadgesListContainer" class="queue-list-container">
@@ -2110,18 +2329,21 @@
       <div class="export-actions-bar">
         <div class="export-buttons-group">
           <button type="button" id="downloadPdfBtn" class="btn-download-pdf">
-            📥 <span data-i18n="downloadPdf">Завантажити PDF (300 DPI)</span>
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span data-i18n="downloadPdf">Завантажити PDF (300 DPI)</span>
           </button>
           <button type="button" id="downloadImageBtn" class="btn-download-img">
-            🖼️ <span data-i18n="downloadImage">Зберегти PNG (300 DPI)</span>
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span data-i18n="downloadImage">Зберегти PNG (300 DPI)</span>
           </button>
           <button type="button" id="printSheetBtn" class="btn-quick-print">
-            🖨️ <span data-i18n="printSheet">Швидкий друк</span>
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span data-i18n="printSheet">Швидкий друк</span>
           </button>
         </div>
 
         <div class="print-scale-notice">
-          <span>ℹ</span>
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           <span data-i18n="printAlert">
             Важливо: у налаштуваннях друку оберіть «Реальний розмір» або 100% масштаб без полів!
           </span>
@@ -2133,11 +2355,11 @@
   <!-- Mobile Bottom Navigation Bar (2 Tabs Only) -->
   <nav class="mobile-nav-bar" id="mobileNavBar">
     <button type="button" class="mobile-nav-tab active" data-tab="editor" id="tabEditorBtn">
-      <span class="tab-icon">✂️</span>
+      <svg class="tab-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
       <span data-i18n="tabEditor">Редактор</span>
     </button>
     <button type="button" class="mobile-nav-tab" data-tab="sheet" id="tabSheetBtn">
-      <span class="tab-icon">📄</span>
+      <svg class="tab-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
       <span data-i18n="tabSheet">Аркуш</span>
       <span class="tab-badge-pill" id="mobileSheetBadge" style="display: none;">0</span>
     </button>
@@ -2159,6 +2381,43 @@
     </div>
   </div>
 
+  <!-- ========================================================================
+       PAPER FORMAT CATALOG & FAVORITES MODAL
+       ======================================================================== -->
+  <div id="paperPickerModal" class="paper-catalog-modal">
+    <div class="paper-catalog-box">
+      <div class="modal-header-row" style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+        <div>
+          <div class="modal-title" style="font-size: 1rem; font-weight: 700; color: #ffffff;" data-i18n="paperCatalogTitle">Каталог форматів паперу</div>
+          <div class="modal-desc" style="font-size: 0.75rem; color: #a1a1aa;" data-i18n="paperCatalogDesc">Оберіть розмір та закріпіть обрані (★) на панель</div>
+        </div>
+        <button type="button" onclick="closePaperPickerModal()" class="mini-action-btn" style="width: 32px; height: 32px; padding: 0; border-radius: 9999px; display: flex; align-items: center; justify-content: center;" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Categories -->
+      <div class="catalog-tabs-row" id="catalogCategoryTabs">
+        <button type="button" class="catalog-tab-btn active" onclick="filterPaperCategory('all')" id="pcat-all" data-i18n="catAll">Всі формати</button>
+        <button type="button" class="catalog-tab-btn" onclick="filterPaperCategory('office')" id="pcat-office" data-i18n="catOffice">Офісні (A4/A3)</button>
+        <button type="button" class="catalog-tab-btn" onclick="filterPaperCategory('photo')" id="pcat-photo" data-i18n="catPhoto">Фото (10×15/13×18)</button>
+        <button type="button" class="catalog-tab-btn" onclick="filterPaperCategory('us')" id="pcat-us" data-i18n="catUs">US Standard</button>
+        <button type="button" class="catalog-tab-btn" onclick="filterPaperCategory('custom')" id="pcat-custom" data-i18n="catCustom">Свій розмір</button>
+      </div>
+
+      <!-- Formats List -->
+      <div class="catalog-list-wrap" id="fullPaperList">
+        <!-- Dynamically rendered list items -->
+      </div>
+
+      <div style="padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: flex-end;">
+        <button type="button" onclick="closePaperPickerModal()" class="btn-primary-add" style="width: 100%; justify-content: center;" data-i18n="applyFormatBtn">
+          Застосувати обраний формат
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
 
@@ -2174,7 +2433,7 @@
         appDocTitle: "PinPoint — Студія створення та друку заготовок значків",
         appTitle: "PinPoint",
         appSubtitle: "Студія створення та друку заготовок значків",
-        installApp: "📲 Встановити додаток",
+        installApp: "Встановити додаток",
         langToggleTooltip: "Перемкнути на English",
         
         // Editor Panel
@@ -2221,7 +2480,7 @@
         cardDecreaseTooltip: "Зменшити кількість",
         cardIncreaseTooltip: "Збільшити кількість",
         editBadgeTooltip: "Відкрити в редакторі",
-        backToEditor: "← Редактор значка",
+        backToEditor: "Редактор значка",
         discardPhoto: "Прибрати",
         discardPhotoTooltip: "Прибрати це фото з редактора",
         replacePhotoTooltip: "Замінити фото на інше",
@@ -2236,6 +2495,15 @@
         
         // Paper settings
         paperHeading: "Формат паперу та поля:",
+        allFormatsCatalog: "Всі формати та обране...",
+        paperCatalogTitle: "Каталог форматів паперу",
+        paperCatalogDesc: "Оберіть розмір та закріпіть обрані (★) на панель",
+        catAll: "Всі формати",
+        catOffice: "Офісні (A4/A3)",
+        catPhoto: "Фото (10×15/13×18)",
+        catUs: "US Standard",
+        catCustom: "Свій розмір",
+        applyFormatBtn: "Застосувати обраний формат",
         paperFormatSelect: "Формат:",
         orientationLabel: "Орієнтація:",
         portrait: "Книжк.",
@@ -2246,7 +2514,7 @@
         customPaperH: "Висота паперу (мм):",
         
         // Paper Groups & Categories
-        favGroup: "★ Обрані формати",
+        favGroup: "Обрані формати",
         officeGroup: "Офісні формати",
         photoGroup: "Фотоформати",
         usGroup: "US Формати",
@@ -2271,7 +2539,7 @@
         // Mobile navigation (2 tabs only)
         tabEditor: "Редактор",
         tabSheet: "Аркуш",
-        viewSheetAction: "Аркуш ➔",
+        viewSheetAction: "Аркуш →",
         
         // Unit abbreviations
         mmUnit: "мм",
@@ -2299,7 +2567,7 @@
         appDocTitle: "PinPoint — Button Badge Maker & Print Studio",
         appTitle: "PinPoint",
         appSubtitle: "Button Badge Maker & Print Studio",
-        installApp: "📲 Install App",
+        installApp: "Install App",
         langToggleTooltip: "Switch to Ukrainian",
         
         // Editor Panel
@@ -2346,7 +2614,7 @@
         cardDecreaseTooltip: "Decrease quantity",
         cardIncreaseTooltip: "Increase quantity",
         editBadgeTooltip: "Load into editor",
-        backToEditor: "← Badge Editor",
+        backToEditor: "Badge Editor",
         discardPhoto: "Discard",
         discardPhotoTooltip: "Discard this photo from editor",
         replacePhotoTooltip: "Replace photo with another",
@@ -2361,6 +2629,15 @@
         
         // Paper settings
         paperHeading: "Paper Format & Margins:",
+        allFormatsCatalog: "All Formats & Favorites...",
+        paperCatalogTitle: "Paper Format Catalog",
+        paperCatalogDesc: "Select paper size and pin favorites (★) to the quick bar",
+        catAll: "All Formats",
+        catOffice: "Office (A4/A3)",
+        catPhoto: "Photo (10×15/13×18)",
+        catUs: "US Standard",
+        catCustom: "Custom Size",
+        applyFormatBtn: "Apply Selected Format",
         paperFormatSelect: "Format:",
         orientationLabel: "Orientation:",
         portrait: "Portrait",
@@ -2371,7 +2648,7 @@
         customPaperH: "Paper Height (mm):",
         
         // Paper Groups & Categories
-        favGroup: "★ Favorite Formats",
+        favGroup: "Favorite Formats",
         officeGroup: "Standard Office Sizes",
         photoGroup: "Photo Formats",
         usGroup: "US Standard Formats",
@@ -2396,7 +2673,7 @@
         // Mobile navigation (2 tabs only)
         tabEditor: "Editor",
         tabSheet: "Sheet",
-        viewSheetAction: "Sheet ➔",
+        viewSheetAction: "Sheet →",
         
         // Unit abbreviations
         mmUnit: "mm",
@@ -2424,21 +2701,21 @@
     
     const PAPER_FORMATS = {
       // Office Formats
-      'A4': { name: 'A4', w: 210, h: 297, cat: 'office', inch: '' },
-      'A3': { name: 'A3', w: 297, h: 420, cat: 'office', inch: '' },
-      'A5': { name: 'A5', w: 148, h: 210, cat: 'office', inch: '' },
-      'A6': { name: 'A6', w: 105, h: 148, cat: 'office', inch: '' },
+      'A4': { name: 'A4 Standard',        chip: 'A4',       w: 210,   h: 297,   cat: 'office', inch: '',      desc: '210 × 297 mm · Standard Office Sheet' },
+      'A3': { name: 'A3 Large',           chip: 'A3',       w: 297,   h: 420,   cat: 'office', inch: '',      desc: '297 × 420 mm · Double size capacity' },
+      'A5': { name: 'A5 Compact',         chip: 'A5',       w: 148,   h: 210,   cat: 'office', inch: '',      desc: '148 × 210 mm · Half sheet' },
+      'A6': { name: 'A6 Mini',            chip: 'A6',       w: 105,   h: 148,   cat: 'office', inch: '',      desc: '105 × 148 mm · Postcard size' },
       // Photo Formats
-      '10x15': { name: '10 × 15 cm (4×6")', w: 101.6, h: 152.4, cat: 'photo', inch: '4×6"' },
-      '13x18': { name: '13 × 18 cm (5×7")', w: 127.0, h: 177.8, cat: 'photo', inch: '5×7"' },
-      '9x13':  { name: '9 × 13 cm (3.5×5")', w: 88.9,  h: 127.0, cat: 'photo', inch: '3.5×5"' },
-      '15x20': { name: '15 × 20 cm (6×8")', w: 152.4, h: 203.2, cat: 'photo', inch: '6×8"' },
-      '10x10': { name: '10 × 10 cm',         w: 100.0, h: 100.0, cat: 'photo', inch: 'sq' },
+      '10x15': { name: '10 × 15 cm (4×6")', chip: '10×15 cm', w: 101.6, h: 152.4, cat: 'photo',  inch: '4×6"', desc: '101.6 × 152.4 mm · Popular photo paper' },
+      '13x18': { name: '13 × 18 cm (5×7")', chip: '13×18 cm', w: 127.0, h: 177.8, cat: 'photo',  inch: '5×7"', desc: '127.0 × 177.8 mm · Medium photo card' },
+      '9x13':  { name: '9 × 13 cm (3.5×5")', chip: '9×13 cm',  w: 88.9,  h: 127.0, cat: 'photo',  inch: '3.5×5"', desc: '88.9 × 127.0 mm · Pocket photo size' },
+      '15x20': { name: '15 × 20 cm (6×8")', chip: '15×20 cm', w: 152.4, h: 203.2, cat: 'photo',  inch: '6×8"', desc: '152.4 × 203.2 mm · Large studio photo' },
+      '10x10': { name: '10 × 10 cm Square', chip: '10×10 cm', w: 100.0, h: 100.0, cat: 'photo',  inch: 'sq',   desc: '100.0 × 100.0 mm · Square craft cut' },
       // US Formats
-      'Letter': { name: 'US Letter', w: 215.9, h: 279.4, cat: 'us', inch: '8.5×11"' },
-      'Legal':  { name: 'US Legal',  w: 215.9, h: 355.6, cat: 'us', inch: '8.5×14"' },
+      'Letter': { name: 'US Letter',          chip: 'Letter',   w: 215.9, h: 279.4, cat: 'us',     inch: '8.5×11"', desc: '8.5 × 11.0 in (215.9 × 279.4 mm)' },
+      'Legal':  { name: 'US Legal',           chip: 'Legal',    w: 215.9, h: 355.6, cat: 'us',     inch: '8.5×14"', desc: '8.5 × 14.0 in (215.9 × 355.6 mm)' },
       // Custom
-      'custom': { name: 'custom', w: 210, h: 297, cat: 'custom', inch: '' }
+      'custom': { name: 'Custom Dimension',   chip: 'Custom',   w: 210,   h: 297,   cat: 'custom', inch: '',     desc: 'Manually defined width × height (mm)' }
     };
 
     function getPaperFormatLabel(key, isFavorite = false) {
@@ -2598,7 +2875,10 @@
       });
 
       // Update switcher button
-      document.getElementById('langFlag').textContent = lang === 'uk' ? '🇺🇦' : '🇬🇧';
+      const flagEl = document.getElementById('langFlag');
+      if (flagEl) {
+        flagEl.innerHTML = `<svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+      }
       document.getElementById('langLabel').textContent = lang === 'uk' ? 'UK' : 'EN';
       const langBtn = document.getElementById('langToggleBtn');
       if (langBtn) langBtn.title = dict.langToggleTooltip;
@@ -2676,8 +2956,96 @@
     /* ========================================================================
        6. PAPER & FAVORITES SYSTEM
        ======================================================================== */
+    let activePaperCategory = 'all';
+
+    function openPaperPickerModal() {
+      const modal = document.getElementById('paperPickerModal');
+      if (modal) {
+        modal.classList.add('active');
+        renderPaperCatalogList();
+      }
+    }
+
+    function closePaperPickerModal() {
+      const modal = document.getElementById('paperPickerModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function filterPaperCategory(cat) {
+      activePaperCategory = cat;
+      document.querySelectorAll('.catalog-tab-btn').forEach(b => {
+        b.classList.toggle('active', b.id === `pcat-${cat}`);
+      });
+      renderPaperCatalogList();
+    }
+
+    function renderPaperCatalogList() {
+      const container = document.getElementById('fullPaperList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const keys = Object.keys(PAPER_FORMATS).filter(key => {
+        if (activePaperCategory === 'all') return true;
+        return PAPER_FORMATS[key].cat === activePaperCategory;
+      });
+
+      keys.forEach(key => {
+        const spec = PAPER_FORMATS[key];
+        const isSelected = state.paperKey === key;
+        const isFav = state.favorites.includes(key);
+
+        const row = document.createElement('div');
+        row.className = `catalog-item-row ${isSelected ? 'selected' : ''}`;
+        
+        row.innerHTML = `
+          <div class="catalog-item-meta">
+            <span class="catalog-item-name">${spec.name}</span>
+            <span class="catalog-item-dim">${spec.desc || (spec.w + ' × ' + spec.h + ' mm')}</span>
+          </div>
+          <button type="button" class="catalog-fav-star-btn ${isFav ? 'starred' : ''}" title="Toggle favorite">
+            ${isFav ? '★' : '☆'}
+          </button>
+        `;
+
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('.catalog-fav-star-btn')) return;
+          selectPaperFormat(key);
+          closePaperPickerModal();
+        });
+
+        const starBtn = row.querySelector('.catalog-fav-star-btn');
+        if (starBtn) {
+          starBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFavoriteFormat(key);
+            renderPaperCatalogList();
+          });
+        }
+
+        container.appendChild(row);
+      });
+    }
+
+    function toggleFavoriteFormat(key) {
+      const idx = state.favorites.indexOf(key);
+      if (idx >= 0) {
+        if (state.favorites.length > 1) {
+          state.favorites.splice(idx, 1);
+        } else {
+          showToast(I18N[state.lang].toastKeepOneFav);
+          return;
+        }
+      } else {
+        state.favorites.push(key);
+      }
+      renderPaperSelectOptions();
+      renderFavoriteChips();
+      saveState();
+    }
+
     function renderFavoriteChips() {
       const container = document.getElementById('favChipsBar');
+      if (!container) return;
       container.innerHTML = '';
 
       state.favorites.forEach((key) => {
@@ -2687,8 +3055,8 @@
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = `fav-chip-tag ${state.paperKey === key ? 'active' : ''}`;
-        const name = key === 'custom' ? I18N[state.lang].customPaperName : fmt.name;
-        chip.innerHTML = `<span class="star-icon">★</span> ${name}`;
+        const name = key === 'custom' ? I18N[state.lang].customPaperName : (fmt.chip || fmt.name);
+        chip.innerHTML = `<span class="star-icon">★</span> <span>${name}</span>`;
         chip.addEventListener('click', () => {
           selectPaperFormat(key);
         });
@@ -3505,13 +3873,22 @@
               <button type="button" class="queue-step-mini-btn inc-btn" title="${dict.cardIncreaseTooltip}">+</button>
             </div>
           </div>
-          <button type="button" class="queue-del-btn" title="${dict.cardDeleteTooltip}">✕</button>
+          <div class="queue-item-actions">
+            <button type="button" class="queue-edit-btn" title="${dict.editBadgeTooltip}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <button type="button" class="queue-del-btn" title="${dict.cardDeleteTooltip}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
         `;
 
-        // Clicking thumbnail or text loads badge back into editor
+        // Clicking thumbnail or text or edit button loads badge back into editor
         card.querySelector('.queue-thumb-wrap').addEventListener('click', () => loadBadgeIntoEditor(item));
         card.querySelector('.queue-item-title').addEventListener('click', () => loadBadgeIntoEditor(item));
         card.querySelector('.queue-item-size-tag').addEventListener('click', () => loadBadgeIntoEditor(item));
+        const editBtn = card.querySelector('.queue-edit-btn');
+        if (editBtn) editBtn.addEventListener('click', () => loadBadgeIntoEditor(item));
 
         // Stepper & Delete
         card.querySelector('.dec-btn').addEventListener('click', (e) => {
@@ -4322,6 +4699,12 @@
       // Add to sheet
       document.getElementById('addToSheetBtn').addEventListener('click', addBadgeToQueue);
 
+      // Paper Catalog Modal trigger
+      const openCatalogBtn = document.getElementById('openPaperCatalogBtn');
+      if (openCatalogBtn) {
+        openCatalogBtn.addEventListener('click', openPaperPickerModal);
+      }
+
       // Paper Select & Star
       document.getElementById('paperSelect').addEventListener('change', (e) => {
         selectPaperFormat(e.target.value);
@@ -4559,6 +4942,10 @@
       if (marginInput) marginInput.value = state.marginMm;
       const gapInput = document.getElementById('gapInput');
       if (gapInput) gapInput.value = state.gapMm;
+
+      window.openPaperPickerModal = openPaperPickerModal;
+      window.closePaperPickerModal = closePaperPickerModal;
+      window.filterPaperCategory = filterPaperCategory;
     });
   </script>
 </body>
