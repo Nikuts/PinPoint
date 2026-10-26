@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <!-- Modern Web Guidance: declare color scheme to prevent FOUC and adapt native UI -->
   <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#090d16">
+  <meta name="theme-color" content="#000000">
   <meta name="description" content="PinPoint — Студія точної підготовки, компонування та друку заготовок для значків (button badge maker, під преси VEVOR)">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -645,15 +645,15 @@
     }
     .gallery-main-btn {
       background: linear-gradient(135deg, var(--accent), var(--accent-hover)) !important;
-      color: #0b1120 !important;
+      color: #ffffff !important;
       border: none !important;
       font-weight: 700 !important;
-      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
       transition: all var(--transition-fast);
     }
     .gallery-main-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
       filter: brightness(1.08);
     }
     .gallery-main-btn:active {
@@ -743,7 +743,7 @@
 
     .preset-chips-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.5rem;
     }
 
@@ -868,10 +868,10 @@
       aspect-ratio: 1 / 1;
       max-width: 440px;
       margin: 0 auto;
-      border-radius: var(--radius-full);
+      border-radius: var(--radius-xl);
       background: #000000;
-      border: 2px dashed rgba(255, 255, 255, 0.18);
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0, 0, 0, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), inset 0 0 40px rgba(0, 0, 0, 0.95);
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -906,7 +906,13 @@
       align-items: center;
       gap: 0.35rem;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12);
-      max-width: 92%;
+      max-width: 94%;
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+    }
+    .floating-cropper-hud.hidden {
+      opacity: 0;
+      pointer-events: none !important;
+      display: none !important;
     }
     .hud-btn {
       width: 34px;
@@ -950,6 +956,7 @@
     .canvas-empty-overlay {
       position: absolute;
       inset: 0;
+      z-index: 30;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -957,13 +964,13 @@
       padding: 1.5rem;
       text-align: center;
       pointer-events: auto;
-      background: rgba(6, 9, 17, 0.78);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      background: rgba(9, 9, 11, 0.82);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       transition: opacity var(--transition-normal);
       cursor: pointer;
       user-select: none;
-      border-radius: var(--radius-full);
+      border-radius: var(--radius-xl);
     }
     .canvas-empty-overlay.hidden {
       opacity: 0;
@@ -974,7 +981,7 @@
     .drop-icon {
       width: 50px;
       height: 50px;
-      color: var(--accent);
+      color: var(--accent-hover);
       margin-bottom: 0.75rem;
       animation: pulseGlow 2.5s infinite ease-in-out;
       pointer-events: none;
@@ -982,7 +989,7 @@
     }
     .canvas-empty-overlay:hover .drop-icon {
       transform: scale(1.08);
-      color: var(--accent-hover);
+      color: #60a5fa;
     }
 
     .drop-sub-text {
@@ -996,17 +1003,19 @@
     /* Cropper Dimension Badges on Canvas */
     .crop-dimension-pill {
       position: absolute;
-      top: 0.6rem;
-      left: 0.6rem;
-      font-size: 0.7rem;
+      top: 0.65rem;
+      left: 0.65rem;
+      z-index: 20;
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
       font-weight: 700;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      padding: 0.2rem 0.5rem;
+      background: rgba(15, 15, 18, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.2rem 0.55rem;
       border-radius: var(--radius-full);
       color: var(--cut-guide);
       pointer-events: none;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       gap: 0.4rem;
@@ -1021,17 +1030,16 @@
 
     .crop-legend-notch {
       position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 0.65rem;
+      right: 0.65rem;
       font-size: 0.65rem;
       font-family: var(--font-mono);
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      background: rgba(10, 10, 12, 0.85);
+      background: rgba(15, 15, 18, 0.85);
       border: 1px solid rgba(59, 130, 246, 0.4);
-      padding: 0.2rem 0.6rem;
+      padding: 0.2rem 0.55rem;
       border-radius: var(--radius-full);
       color: #60a5fa;
       pointer-events: none;
@@ -1040,7 +1048,7 @@
       gap: 0.35rem;
       z-index: 20;
       backdrop-filter: blur(8px);
-      box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
     }
 
     /* Vector Spin Icon for Loading States */
@@ -1097,7 +1105,7 @@
 
     .control-slider-row {
       display: grid;
-      grid-template-columns: 80px 1fr 48px auto;
+      grid-template-columns: 76px 1fr 48px 36px;
       align-items: center;
       gap: 0.65rem;
     }
@@ -1526,6 +1534,11 @@
     }
     .queue-item-card:hover {
       border-color: #3b82f6;
+    }
+    .queue-item-card.editing {
+      border-color: #6366f1;
+      background: rgba(49, 46, 129, 0.28);
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.35);
     }
 
     .queue-thumb-wrap {
@@ -1992,15 +2005,16 @@
     }
 
     .toast-msg {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid var(--accent);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-glow);
+      background: rgba(24, 24, 27, 0.94);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 14px var(--accent-glow);
       color: var(--text-main);
-      padding: 0.6rem 1rem;
+      padding: 0.65rem 1rem;
       border-radius: var(--radius-md);
       font-size: 0.85rem;
       font-weight: 600;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       animation: slideInRight 0.25s ease-out;
       pointer-events: auto;
     }
@@ -2099,6 +2113,8 @@
       .sheet-doc-badges-card,
       .export-actions-bar,
       .panel-mobile-header,
+      .desktop-only-header,
+      #sheetPanel > .panel-header,
       .empty-sheet-msg {
         display: none !important;
       }
@@ -2409,7 +2425,7 @@
         </div>
 
         <!-- Floating Glass Micro-Action HUD -->
-        <div class="floating-cropper-hud glass-ios" id="floatingCropperHud">
+        <div class="floating-cropper-hud glass-ios hidden" id="floatingCropperHud">
           <label for="fileInput" class="hud-btn" id="replaceImgBtn" data-i18n-title="replacePhotoTooltip" title="Замінити фото на інше">
             <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           </label>
@@ -3388,7 +3404,7 @@
       if (el) el.textContent = dict.wrapLabel.replace('{wrap}', wrap.toFixed(1));
       const liveBadge = document.getElementById('bleedInfoBadge');
       if (liveBadge) {
-        liveBadge.textContent = (state.lang === 'uk' ? 'Запас ' : 'Bleed ') + wrap.toFixed(1) + ' мм';
+        liveBadge.textContent = `${state.lang === 'uk' ? 'Запас' : 'Bleed'} ${wrap.toFixed(1)} ${dict.mmUnit}`;
       }
     }
 
@@ -3960,6 +3976,8 @@
           updateZoomUI();
           updateRotationUI();
           emptyOverlay.classList.add('hidden');
+          const hud = document.getElementById('floatingCropperHud');
+          if (hud) hud.classList.remove('hidden');
           drawCropCanvas();
           showToast(I18N[state.lang].toastImageLoaded);
         };
@@ -4231,9 +4249,12 @@
       updateZoomUI();
       updateRotationUI();
 
-      // Show the empty overlay
+      // Show the empty overlay and hide floating HUD
       const emptyOverlay = document.getElementById('canvasEmptyOverlay');
       if (emptyOverlay) emptyOverlay.classList.remove('hidden');
+      const hud = document.getElementById('floatingCropperHud');
+      if (hud) hud.classList.add('hidden');
+      renderQueueList();
 
       drawCropCanvas();
       triggerHaptic('light');
@@ -4342,7 +4363,7 @@
       container.innerHTML = '';
       state.queue.forEach((item, index) => {
         const card = document.createElement('div');
-        card.className = 'queue-item-card';
+        card.className = `queue-item-card${state.editingBadgeId === item.id ? ' editing' : ''}`;
         card.innerHTML = `
           <div class="queue-thumb-wrap" title="${dict.editBadgeTooltip}">
             <img src="${item.thumbUrl}" alt="Badge preview" class="queue-thumb-img">
@@ -4464,8 +4485,11 @@
         updateBleedCalc();
         updatePresetBadgeText();
         updateAddToSheetButtonUI();
+        renderQueueList();
         const emptyOverlay = document.getElementById('canvasEmptyOverlay');
         if (emptyOverlay) emptyOverlay.classList.add('hidden');
+        const hud = document.getElementById('floatingCropperHud');
+        if (hud) hud.classList.remove('hidden');
         drawCropCanvas();
         switchMobileTab('editor');
         showToast(I18N[state.lang].badgeLoadedToast);
@@ -4655,11 +4679,12 @@
       const subtitleEl = document.getElementById('sheetTelemetrySubtitle');
       if (subtitleEl) {
         const dims = getEffectivePaperDimensions();
+        const dict = I18N[state.lang];
         const pName = PAPER_FORMATS[state.paperKey]?.name || (state.lang === 'uk' ? 'Свій розмір' : 'Custom');
         const orientName = state.orientation === 'portrait'
           ? (state.lang === 'uk' ? 'Книжкова' : 'Portrait')
           : (state.lang === 'uk' ? 'Альбомна' : 'Landscape');
-        subtitleEl.textContent = `${pName} · ${orientName} · ${dims.w.toFixed(0)} × ${dims.h.toFixed(0)} мм · 300 DPI`;
+        subtitleEl.textContent = `${pName} · ${orientName} · ${dims.w.toFixed(0)} × ${dims.h.toFixed(0)} ${dict.mmUnit} · 300 DPI`;
       }
 
       // Disable export if queue is empty
@@ -5234,6 +5259,7 @@
         cancelEditBtn.addEventListener('click', () => {
           state.editingBadgeId = null;
           updateAddToSheetButtonUI();
+          renderQueueList();
           triggerHaptic('light');
         });
       }
@@ -5315,6 +5341,10 @@
       if (modalConfirmBtn) {
         modalConfirmBtn.addEventListener('click', () => {
           state.queue = [];
+          if (state.editingBadgeId) {
+            state.editingBadgeId = null;
+            updateAddToSheetButtonUI();
+          }
           renderQueueList();
           saveState();
           recalculatePackingAndRender();
