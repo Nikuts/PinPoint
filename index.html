@@ -267,6 +267,7 @@
       min-width: 0;
     }
 
+    .brand-icon-circle,
     .brand-badge-icon {
       width: 28px;
       height: 28px;
@@ -304,9 +305,19 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    @media (max-width: 640px) {
+    @media (max-width: 1023px) {
       .brand-subtitle {
         display: none;
+      }
+      .install-pwa-btn span {
+        display: none;
+      }
+      .install-pwa-btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        align-items: center;
+        justify-content: center;
       }
     }
 
@@ -579,8 +590,11 @@
       }
       .viewfinder-stage {
         flex: 1;
-        padding: 0.75rem 1rem 0.5rem 1rem !important;
+        padding: 0.5rem 1rem 1.25rem 1rem !important;
         justify-content: center;
+      }
+      .viewfinder-sliders-wrap {
+        display: none !important;
       }
       .editor-bottom-sheet {
         background: rgba(26, 26, 28, 0.94);
@@ -588,26 +602,21 @@
         -webkit-backdrop-filter: blur(25px) saturate(180%);
         border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
         border-radius: 32px 32px 0 0;
-        padding: 0.75rem 1.25rem max(1.25rem, env(safe-area-inset-bottom)) 1.25rem !important;
+        padding: 0.75rem 1.15rem max(1.15rem, env(safe-area-inset-bottom)) 1.15rem !important;
         box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.85);
-        gap: 0.85rem !important;
+        gap: 0.75rem !important;
         width: 100%;
         min-width: 0;
       }
       .preset-chips-row {
-        display: flex !important;
-        overflow-x: auto;
-        gap: 0.5rem !important;
-        padding-bottom: 0.15rem;
-        scrollbar-width: none;
-      }
-      .preset-chips-row::-webkit-scrollbar {
-        display: none;
+        display: grid !important;
+        grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+        gap: 0.35rem !important;
       }
       .preset-chip-btn {
-        flex-shrink: 0;
-        padding: 0.5rem 0.85rem !important;
-        border-radius: 12px;
+        padding: 0.5rem 0.15rem !important;
+        font-size: 0.68rem !important;
+        border-radius: 10px;
       }
       .bottom-sheet-handle {
         display: block !important;
@@ -615,48 +624,59 @@
       .mobile-sheet-summary-row {
         display: flex !important;
       }
-      /* Mobile Sheet View: Full-Screen Slide-Up Modal */
+      /* Mobile Sheet View: Full-Screen Slide-Up Overlay Modal */
       #sheetPanel {
-        background: #000000;
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: #050507;
         border: none;
         border-radius: 0;
-        padding: 0.75rem 1rem max(1.25rem, env(safe-area-inset-bottom)) 1rem;
+        padding: max(0.85rem, env(safe-area-inset-top)) 1rem max(1.25rem, env(safe-area-inset-bottom)) 1rem;
         box-shadow: none;
         width: 100%;
-        min-height: calc(100dvh - 53px);
+        height: 100dvh;
+        overflow-y: auto;
         gap: 0.75rem;
       }
       #sheetPanel > .panel-header {
-        padding-bottom: 0.5rem;
+        padding-bottom: 0.65rem;
+        display: flex;
         flex-wrap: wrap;
-        position: relative;
-        padding-right: 2.5rem;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      #sheetPanel > .panel-header > div:first-child {
+        flex: 1;
+        min-width: 0;
+        padding-right: 0.5rem;
+      }
+      #sheetPanel > .panel-header .sheet-header-right {
+        display: contents;
       }
       #sheetPanel > .panel-header .mobile-sheet-close-btn {
-        position: absolute;
-        top: 0;
-        right: 0;
-      }
-      .paper-controls-grid {
-        grid-template-columns: 1fr 1fr !important;
-      }
-      .paper-controls-grid > .form-group:first-child {
-        display: none;
-      }
-      .mobile-sheet-close-btn {
         display: inline-flex !important;
+        order: 2;
+        flex-shrink: 0;
+      }
+      #sheetPanel > .panel-header .orientation-switch {
+        order: 3;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
       }
       .paper-settings-card {
         padding: 0.75rem !important;
         gap: 0.55rem !important;
       }
       .sheet-preview-wrap {
-        min-height: 220px !important;
+        min-height: 210px !important;
         padding: 0.65rem !important;
         gap: 0.4rem !important;
       }
       .queue-list-container {
-        max-height: 120px !important;
+        max-height: 130px !important;
       }
     }
 
@@ -808,18 +828,7 @@
       pointer-events: none;
     }
     .lens-notch-label {
-      position: absolute;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 9px;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      color: #71717a;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      z-index: 22;
-      pointer-events: none;
+      display: none !important;
     }
 
     .cropper-container {
@@ -2563,7 +2572,7 @@
       <button type="button" id="sheetClearDocBtnTop" style="display: none;"></button>
       <button type="button" id="sheetClearDocBtn" style="display: none;"></button>
 
-      <!-- 1. Paper Formats Selection Bar -->
+      <!-- 1. Paper Formats Selection Bar (Clean Quick Favorites Bar + Modal Trigger) -->
       <div class="paper-settings-card">
         <div class="paper-header-row">
           <label class="form-label" data-i18n="paperHeading">Формат паперу</label>
@@ -2578,37 +2587,11 @@
           <!-- Dynamically populated favorite chips -->
         </div>
 
-        <!-- Compact Format Dropdown, Star, Margins & Gap -->
-        <div class="paper-controls-grid">
-          <div class="form-group">
-            <label class="form-label" data-i18n="paperFormatSelect">Формат:</label>
-            <div style="display: flex; gap: 0.35rem;">
-              <select id="paperSelect" class="paper-select"></select>
-              <button type="button" id="starPaperBtn" class="toggle-fav-btn starred" data-i18n-title="addFavTooltip" title="Додати в обране (★)">★</button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" data-i18n="marginsLabel">Поля (мм):</label>
-            <input type="number" id="marginInput" class="num-input" value="5.0" min="0" max="40" step="0.5">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" data-i18n="gapLabel">Зазор (мм):</label>
-            <input type="number" id="gapInput" class="num-input" value="2.5" min="0" max="25" step="0.5">
-          </div>
-        </div>
-
-        <!-- Custom Paper Dimensions -->
-        <div id="customPaperRow" class="custom-paper-row">
-          <div class="form-group">
-            <label class="form-label" data-i18n="customPaperW">Ширина паперу (мм):</label>
-            <input type="number" id="customPaperWInput" class="num-input" value="210" min="50" max="1000" step="1">
-          </div>
-          <div class="form-group">
-            <label class="form-label" data-i18n="customPaperH">Висота паперу (мм):</label>
-            <input type="number" id="customPaperHInput" class="num-input" value="297" min="50" max="1000" step="1">
-          </div>
+        <!-- Hidden legacy paper select & star kept in DOM for test compatibility -->
+        <div style="display: none !important;" aria-hidden="true">
+          <label class="form-label" data-i18n="paperFormatSelect">Формат:</label>
+          <select id="paperSelect" class="paper-select"></select>
+          <button type="button" id="starPaperBtn" class="toggle-fav-btn starred" data-i18n-title="addFavTooltip" title="Додати в обране (★)">★</button>
         </div>
       </div>
 
@@ -2735,12 +2718,36 @@
         <button type="button" class="catalog-tab-btn" onclick="filterPaperCategory('custom')" id="pcat-custom" data-i18n="catCustom">Свій розмір</button>
       </div>
 
+      <!-- Custom Paper Dimensions (inside Catalog Modal) -->
+      <div id="customPaperRow" class="custom-paper-row" style="padding: 0.75rem; background: #18181b; border: 1px solid #27272a; border-radius: 16px; margin-bottom: 0.5rem;">
+        <div class="form-group">
+          <label class="form-label" data-i18n="customPaperW">Ширина паперу (мм):</label>
+          <input type="number" id="customPaperWInput" class="num-input" value="210" min="50" max="1000" step="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="customPaperH">Висота паперу (мм):</label>
+          <input type="number" id="customPaperHInput" class="num-input" value="297" min="50" max="1000" step="1">
+        </div>
+      </div>
+
       <!-- Formats List -->
       <div class="catalog-list-wrap" id="fullPaperList">
         <!-- Dynamically rendered list items -->
       </div>
 
-      <div style="padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: flex-end;">
+      <!-- Sheet Print Margins & Gap Settings inside Catalog Modal -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; padding: 0.65rem 0; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+        <div class="form-group">
+          <label class="form-label" data-i18n="marginsLabel">Поля (мм):</label>
+          <input type="number" id="marginInput" class="num-input" value="5.0" min="0" max="40" step="0.5">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="gapLabel">Зазор (мм):</label>
+          <input type="number" id="gapInput" class="num-input" value="2.5" min="0" max="25" step="0.5">
+        </div>
+      </div>
+
+      <div style="padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: flex-end;">
         <button type="button" onclick="closePaperPickerModal()" class="btn-primary-add" style="width: 100%; justify-content: center;" data-i18n="applyFormatBtn">
           Застосувати обраний формат
         </button>
@@ -3167,7 +3174,7 @@
       gapMm: 2.5,
       customPaperW: 210,
       customPaperH: 297,
-      favorites: ['A4'],
+      favorites: ['A4', '10x15', 'Letter', '10x10'],
       
       // Cropper state
       image: null,
@@ -3201,7 +3208,12 @@
 
         const savedFavs = localStorage.getItem('pinpoint_favorites');
         if (savedFavs) {
-          state.favorites = JSON.parse(savedFavs);
+          const parsedFavs = JSON.parse(savedFavs);
+          if (Array.isArray(parsedFavs) && parsedFavs.length > 0) {
+            state.favorites = (parsedFavs.length === 1 && parsedFavs[0] === 'A4')
+              ? ['A4', '10x15', 'Letter', '10x10']
+              : parsedFavs;
+          }
         }
 
         const savedPaper = localStorage.getItem('pinpoint_paper');
@@ -3254,7 +3266,10 @@
       }
     }
 
+    let isHydratingDB = false;
+
     async function hydrateQueueFromIndexedDB() {
+      isHydratingDB = true;
       try {
         const fullQueue = await PinPointDB.loadQueue();
         if (Array.isArray(fullQueue) && fullQueue.length > 0) {
@@ -3262,19 +3277,22 @@
           let updated = false;
           state.queue = state.queue.map(item => {
             const full = map.get(item.id);
-            if (full && full.highResUrl && full.highResUrl !== item.highResUrl) {
+            if (full && (full.highResUrl !== item.highResUrl || full.sourceUrl !== item.sourceUrl)) {
               updated = true;
               return { ...item, ...full };
             }
             return full || item;
           });
           if (updated) {
+            sheetImageCache.clear();
             renderQueueList();
             recalculatePackingAndRender();
           }
         }
       } catch (e) {
         console.warn('IndexedDB hydration skipped:', e);
+      } finally {
+        isHydratingDB = false;
       }
     }
 
@@ -3307,8 +3325,10 @@
           console.warn('Could not save queue to localStorage:', queueErr);
         }
 
-        // Asynchronously persist full-fidelity 300 DPI queue to IndexedDB
-        PinPointDB.saveQueue(state.queue).catch(() => {});
+        // Asynchronously persist full-fidelity queue (with original sourceUrl & highResUrl) to IndexedDB
+        if (!isHydratingDB) {
+          PinPointDB.saveQueue(state.queue).catch(() => {});
+        }
       } catch (err) {
         console.warn('Could not save to localStorage:', err);
       }
@@ -4114,51 +4134,17 @@
       cropCtx.stroke();
       cropCtx.restore();
 
-      // 6. Top 12 o'clock Notch Indicator (Alignment Marker)
+      // 6. Top 12 o'clock Notch Indicator (Clean Studio Blue Alignment Marker)
       cropCtx.save();
       cropCtx.beginPath();
-      cropCtx.moveTo(cx, cy - cutRadiusPx - 10);
-      cropCtx.lineTo(cx, cy - cutRadiusPx + 10);
-      cropCtx.strokeStyle = '#f59e0b';
-      cropCtx.lineWidth = 3.5;
+      cropCtx.moveTo(cx, cy - cutRadiusPx - 6);
+      cropCtx.lineTo(cx, cy - cutRadiusPx + 8);
+      cropCtx.strokeStyle = '#3b82f6';
+      cropCtx.lineWidth = 3.0;
       cropCtx.lineCap = 'round';
-      cropCtx.shadowColor = 'rgba(245, 158, 11, 0.6)';
+      cropCtx.shadowColor = 'rgba(59, 130, 246, 0.7)';
       cropCtx.shadowBlur = 6;
       cropCtx.stroke();
-      cropCtx.restore();
-
-      // 7. Interactive 12 o'clock Rotate Knob & Stem
-      const knobY = cy - cutRadiusPx - 22;
-      const isKnobActive = isKnobHovered || activeDragType === 'rotate';
-
-      cropCtx.save();
-      // Stem line connecting cut circle to knob
-      cropCtx.beginPath();
-      cropCtx.moveTo(cx, cy - cutRadiusPx - 8);
-      cropCtx.lineTo(cx, knobY + 11);
-      cropCtx.strokeStyle = isKnobActive ? '#38bdf8' : '#64748b';
-      cropCtx.lineWidth = 2.0;
-      cropCtx.stroke();
-
-      // Knob circle
-      cropCtx.beginPath();
-      cropCtx.arc(cx, knobY, 13, 0, Math.PI * 2);
-      cropCtx.fillStyle = '#0f172a';
-      cropCtx.fill();
-      cropCtx.strokeStyle = isKnobActive ? '#00f0ff' : '#f59e0b';
-      cropCtx.lineWidth = 2.2;
-      if (isKnobActive) {
-        cropCtx.shadowColor = 'rgba(0, 240, 255, 0.8)';
-        cropCtx.shadowBlur = 10;
-      }
-      cropCtx.stroke();
-
-      // Rotate icon inside knob
-      cropCtx.fillStyle = isKnobActive ? '#38bdf8' : '#fbbf24';
-      cropCtx.font = 'bold 12px sans-serif';
-      cropCtx.textAlign = 'center';
-      cropCtx.textBaseline = 'middle';
-      cropCtx.fillText('⟳', cx, knobY);
       cropCtx.restore();
 
       // 8. Active Angle Overlay Pill while Rotating
@@ -4218,21 +4204,22 @@
     }
 
     /* ========================================================================
-       8. 300 DPI RASTER GENERATION & QUEUE MANAGEMENT
+       8. ORIGINAL-QUALITY / 600+ DPI RASTER GENERATION & QUEUE MANAGEMENT
        ======================================================================== */
     function generateHighResBadgeDataUrl(cutMm, visibleMm) {
       if (!state.image) return null;
 
-      // Minimum 300 DPI baseline (300 / 25.4 = ~11.81102 px/mm)
-      const minDpiPx = Math.round(cutMm * (300 / 25.4)); // e.g. 70mm -> 827px
+      // Minimum 600 DPI baseline (600 / 25.4 = ~23.622 px/mm; e.g. 70mm -> 1654px)
+      const minDpiPx = Math.round(cutMm * (600 / 25.4));
 
-      // Use natural source resolution of the image to guarantee zero quality reduction
-      const natW = state.image.naturalWidth || state.image.width || 1000;
-      const natH = state.image.naturalHeight || state.image.height || 1000;
-      const effectiveNativePx = Math.round(Math.min(natW, natH) * state.zoom);
+      // Preserve 100% of original source resolution even when zoomed out (e.g. Fit Face)
+      const natW = state.image.naturalWidth || state.image.width || 2000;
+      const natH = state.image.naturalHeight || state.image.height || 2000;
+      const zoomFactor = Math.max(0.25, Math.min(1.0, state.zoom || 1.0));
+      const effectiveNativePx = Math.round(Math.max(natW, natH) / zoomFactor);
 
-      // Preserve native source detail up to 2400px (~870 DPI for 70mm), lossless PNG
-      const targetSizePx = Math.max(minDpiPx, Math.min(2400, effectiveNativePx));
+      // Preserve full native source detail up to 4096px, lossless PNG
+      const targetSizePx = Math.max(minDpiPx, Math.min(4096, effectiveNativePx));
 
       const offCanvas = document.createElement('canvas');
       offCanvas.width = targetSizePx;
@@ -4267,6 +4254,39 @@
       offCtx.restore();
 
       return offCanvas.toDataURL('image/png');
+    }
+
+    function drawBadgeOnSheetContext(ctx, cx, cy, cutRadiusPx, badge, sourceImg, fallbackImg) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, cutRadiusPx, 0, Math.PI * 2);
+      ctx.clip();
+
+      if (sourceImg && badge.transform) {
+        // Direct single-pass rendering from the untouched original source photo!
+        const cutDiamPx = cutRadiusPx * 2;
+        const scaleMultiplier = cutDiamPx / 350;
+        const imgXTarget = (badge.transform.imgX || 0) * scaleMultiplier;
+        const imgYTarget = (badge.transform.imgY || 0) * scaleMultiplier;
+
+        ctx.translate(cx + imgXTarget, cy + imgYTarget);
+        ctx.rotate(((badge.transform.rotation || 0) * Math.PI) / 180);
+
+        const natW = sourceImg.naturalWidth || sourceImg.width || cutDiamPx;
+        const natH = sourceImg.naturalHeight || sourceImg.height || cutDiamPx;
+        const baseScale = cutDiamPx / Math.min(natW, natH);
+        const totalScale = baseScale * (badge.transform.zoom || 1.0);
+        const dw = natW * totalScale;
+        const dh = natH * totalScale;
+
+        ctx.drawImage(sourceImg, -dw / 2, -dh / 2, dw, dh);
+      } else if (fallbackImg) {
+        ctx.drawImage(fallbackImg, cx - cutRadiusPx, cy - cutRadiusPx, cutRadiusPx * 2, cutRadiusPx * 2);
+      } else if (sourceImg) {
+        ctx.drawImage(sourceImg, cx - cutRadiusPx, cy - cutRadiusPx, cutRadiusPx * 2, cutRadiusPx * 2);
+      }
+
+      ctx.restore();
     }
 
 
@@ -4312,18 +4332,20 @@
       const isEditing = Boolean(state.editingBadgeId);
       const badgeId = state.editingBadgeId || `pin_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
 
-      // Create a small lightweight thumbnail (120px) for quick queue rendering
+      // Create a crisp 360x360 thumbnail for queue cards & localStorage fallback
       const thumbCanvas = document.createElement('canvas');
-      thumbCanvas.width = 120;
-      thumbCanvas.height = 120;
+      thumbCanvas.width = 360;
+      thumbCanvas.height = 360;
       const tCtx = thumbCanvas.getContext('2d');
+      tCtx.imageSmoothingEnabled = true;
+      tCtx.imageSmoothingQuality = 'high';
       const tempImg = new Image();
       tempImg.onload = () => {
         tCtx.save();
         tCtx.beginPath();
-        tCtx.arc(60, 60, 60, 0, Math.PI * 2);
+        tCtx.arc(180, 180, 180, 0, Math.PI * 2);
         tCtx.clip();
-        tCtx.drawImage(tempImg, 0, 0, 120, 120);
+        tCtx.drawImage(tempImg, 0, 0, 360, 360);
         tCtx.restore();
 
         const badgeItem = {
@@ -4675,6 +4697,8 @@
             visibleMm: badge.visibleMm,
             cutMm: badge.cutMm,
             radius: badge.cutMm / 2,
+            sourceUrl: badge.sourceUrl,
+            transform: badge.transform,
             highResUrl: badge.highResUrl
           });
         }
@@ -4727,15 +4751,12 @@
         const orientName = state.orientation === 'portrait'
           ? (state.lang === 'uk' ? 'Книжкова' : 'Portrait')
           : (state.lang === 'uk' ? 'Альбомна' : 'Landscape');
-        subtitleEl.textContent = `${pName} · ${orientName} · ${dims.w.toFixed(0)} × ${dims.h.toFixed(0)} ${dict.mmUnit} · 300 DPI`;
+        subtitleEl.textContent = `${shortPaperName} ${orientName} · ${dims.w.toFixed(0)} × ${dims.h.toFixed(0)} ${dict.mmUnit} · 300 DPI`;
       }
 
       const paperDimsEl = document.getElementById('sheetPaperDimsText');
       if (paperDimsEl) {
-        const orientLower = state.orientation === 'portrait'
-          ? (state.lang === 'uk' ? 'книжкова' : 'portrait')
-          : (state.lang === 'uk' ? 'альбомна' : 'landscape');
-        paperDimsEl.textContent = `${dims.w.toFixed(1)} × ${dims.h.toFixed(1)} ${dict.mmUnit} (${orientLower})`;
+        paperDimsEl.textContent = `${dims.w.toFixed(0)} × ${dims.h.toFixed(0)} ${dict.mmUnit}`;
       }
 
       const mobSummaryEl = document.getElementById('mobileSheetSummaryText');
@@ -4798,8 +4819,8 @@
         containerEl.style.height = `${cssH}px`;
       }
 
-      // Base canvas resolution: 2000px high for ultra-crisp display & browser print
-      const canvasH = 2000;
+      // Base canvas resolution: 3508px (true 300+ DPI on A4) for ultra-crisp display & browser print
+      const canvasH = 3508;
       const canvasW = Math.round(canvasH * aspectRatio);
       sheetCanvas.width = canvasW;
       sheetCanvas.height = canvasH;
@@ -4846,10 +4867,13 @@
       sheetCtx.stroke();
       sheetCtx.restore();
 
-      // Render placed badges on current page
+      // Render placed badges on current page directly from original source image (single-pass)
       if (state.packedPages.length > 0 && state.packedPages[state.currentPageIdx]) {
         const curPage = state.packedPages[state.currentPageIdx];
-        const loadedImages = await Promise.all(curPage.map(b => getCachedSheetImage(b.highResUrl)));
+        const [loadedSources, loadedFallbacks] = await Promise.all([
+          Promise.all(curPage.map(b => getCachedSheetImage(b.sourceUrl || b.highResUrl))),
+          Promise.all(curPage.map(b => getCachedSheetImage(b.highResUrl)))
+        ]);
         if (token !== sheetRenderToken) return;
 
         curPage.forEach((badge, idx) => {
@@ -4857,17 +4881,10 @@
           const cy = badge.y * pxPerMm;
           const cutRadiusPx = badge.radius * pxPerMm;
           const faceRadiusPx = (badge.visibleMm / 2) * pxPerMm;
-          const img = loadedImages[idx];
+          const srcImg = loadedSources[idx];
+          const fallbackImg = loadedFallbacks[idx];
 
-          if (img) {
-            sheetCtx.save();
-            sheetCtx.beginPath();
-            sheetCtx.arc(cx, cy, cutRadiusPx, 0, Math.PI * 2);
-            sheetCtx.clip();
-            sheetCtx.drawImage(img, cx - cutRadiusPx, cy - cutRadiusPx, cutRadiusPx * 2, cutRadiusPx * 2);
-            sheetCtx.restore();
-          }
-
+          drawBadgeOnSheetContext(sheetCtx, cx, cy, cutRadiusPx, badge, srcImg, fallbackImg);
           drawBadgeGuides(cx, cy, cutRadiusPx, faceRadiusPx);
         });
       } else {
@@ -4987,8 +5004,11 @@
 
       try {
         const paper = getEffectivePaperDimensions();
-        // Exact 300 DPI: 300 / 25.4 px per mm
-        const pxPerMm = 300 / 25.4;
+        // Ultra-high-resolution 600 DPI baseline (23.62 px/mm), capped at 7016px max sheet edge
+        const maxSheetDimPx = 7016;
+        const basePxPerMm = 600 / 25.4;
+        const maxAllowedPxPerMm = maxSheetDimPx / Math.max(paper.w, paper.h);
+        const pxPerMm = Math.min(maxAllowedPxPerMm, basePxPerMm);
         const targetW = Math.round(paper.w * pxPerMm);
         const targetH = Math.round(paper.h * pxPerMm);
 
@@ -5018,32 +5038,26 @@
             (paper.h - 2 * state.marginMm) * pxPerMm
           );
           ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
-          ctx.lineWidth = 1.0;
+          ctx.lineWidth = Math.max(1.0, 0.12 * pxPerMm);
           ctx.setLineDash([8, 8]);
           ctx.stroke();
           ctx.restore();
 
-          // 3. Pre-load all badge images for this page in parallel via cache
-          const badgeImages = await Promise.all(
-            pageBadges.map((b) => getCachedSheetImage(b.highResUrl))
-          );
+          // 3. Pre-load all original source images & fallback images for this page in parallel
+          const [sourceImages, fallbackImages] = await Promise.all([
+            Promise.all(pageBadges.map((b) => getCachedSheetImage(b.sourceUrl || b.highResUrl))),
+            Promise.all(pageBadges.map((b) => getCachedSheetImage(b.highResUrl)))
+          ]);
 
-          // 4. Render each badge and its vector guidelines
+          // 4. Render each badge directly from original source image (single-pass) and draw vector guidelines
           pageBadges.forEach((badge, idx) => {
             const cx = badge.x * pxPerMm;
             const cy = badge.y * pxPerMm;
             const cutRadiusPx = badge.radius * pxPerMm;
-            const faceRadiusPx = (badge.visibleMm / 2) * pxPerMm;
-            const img = badgeImages[idx];
+            const srcImg = sourceImages[idx];
+            const fallbackImg = fallbackImages[idx];
 
-            if (img) {
-              ctx.save();
-              ctx.beginPath();
-              ctx.arc(cx, cy, cutRadiusPx, 0, Math.PI * 2);
-              ctx.clip();
-              ctx.drawImage(img, cx - cutRadiusPx, cy - cutRadiusPx, cutRadiusPx * 2, cutRadiusPx * 2);
-              ctx.restore();
-            }
+            drawBadgeOnSheetContext(ctx, cx, cy, cutRadiusPx, badge, srcImg, fallbackImg);
 
             // Outer cut line (gray #b0b0b0, ~0.15mm)
             ctx.save();
