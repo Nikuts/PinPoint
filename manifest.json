@@ -1,7 +1,7 @@
 {
   "name": "PinPoint - Badge Maker Studio",
   "short_name": "PinPoint",
-  "description": "Client-side PWA for preparing, cropping, packing, and printing button badge blanks (VEVOR & compatible presses).",
+  "description": "Client-side PWA for preparing, cropping, packing, and printing button badge blanks.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -5,7 +5,7 @@ const { createDOMEnvironment } = require('../helpers/dom_env.js');
 describe('Unit: Badge Presets & Math Calculations', () => {
   const { app } = createDOMEnvironment();
 
-  it('contains all standard VEVOR presets with correct visible and cut diameters', () => {
+  it('contains all standard badge presets with correct visible and cut diameters', () => {
     assert.deepStrictEqual(app.BADGE_PRESETS['58'], { visible: 58, cut: 70 });
     assert.deepStrictEqual(app.BADGE_PRESETS['44'], { visible: 44, cut: 54 });
     assert.deepStrictEqual(app.BADGE_PRESETS['32'], { visible: 32, cut: 44 });
