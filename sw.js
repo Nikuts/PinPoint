@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pinpoint-v14';
+const CACHE_NAME = 'pinpoint-v15';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -10,7 +10,7 @@ const PRECACHE_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_ASSETS))
+      .then((cache) => cache.addAll(PRECACHE_ASSETS.map((url) => new Request(url, { cache: 'reload' }))))
       .then(() => self.skipWaiting())
   );
 });
@@ -37,10 +37,10 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
-  // Network-First for navigation / HTML documents to guarantee immediate UI updates on mobile & desktop
+  // Network-First (bypassing HTTP cache) for navigation / HTML documents to guarantee immediate UI updates on mobile & desktop
   if (request.mode === 'navigate' || request.destination === 'document' || url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
     event.respondWith(
-      fetch(request)
+      fetch(request, { cache: 'no-cache' })
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseToCache = networkResponse.clone();
