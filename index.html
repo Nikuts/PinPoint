@@ -1304,6 +1304,111 @@
     .btn-primary-add.editing-mode:hover {
       background: #6366f1;
     }
+    .btn-primary-add.is-loading {
+      background: linear-gradient(110deg, #1d4ed8 25%, #3b82f6 50%, #1d4ed8 75%);
+      background-size: 200% 100%;
+      animation: btnLoadingShimmer 1.2s linear infinite;
+      box-shadow: 0 0 24px rgba(59, 130, 246, 0.55);
+      cursor: wait;
+      pointer-events: none;
+    }
+    @keyframes btnLoadingShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Prominent Viewfinder & Sheet Processing Overlays */
+    .badge-processing-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(9, 9, 11, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 45;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+    .badge-processing-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .processing-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 1rem 1.25rem;
+      text-align: center;
+    }
+    .processing-spinner-ring {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3.5px solid rgba(59, 130, 246, 0.22);
+      border-top-color: #3b82f6;
+      border-right-color: #60a5fa;
+      animation: spinLoaderRing 0.75s linear infinite;
+      box-shadow: 0 0 18px rgba(59, 130, 246, 0.45);
+    }
+    .processing-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.01em;
+    }
+    .processing-sub {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: #93c5fd;
+    }
+
+    .sheet-processing-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(9, 9, 11, 0.45);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 25;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+    .sheet-processing-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .sheet-processing-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.55rem 1rem;
+      border-radius: 9999px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+    }
+    .processing-spinner-mini {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(96, 165, 250, 0.25);
+      border-top-color: #60a5fa;
+      animation: spinLoaderRing 0.7s linear infinite;
+    }
+    @keyframes spinLoaderRing {
+      to { transform: rotate(360deg); }
+    }
 
     .btn-delete-active-badge {
       width: 44px;
@@ -2410,6 +2515,15 @@
               <span id="cropDimText">Лице: 58 мм | Різ: 70 мм</span>
             </div>
             <div class="crop-legend-notch">▲ 12h</div>
+
+            <!-- Prominent High-Res Processing / Photo Loading Overlay -->
+            <div id="badgeProcessingOverlay" class="badge-processing-overlay" aria-live="polite">
+              <div class="processing-card">
+                <div class="processing-spinner-ring"></div>
+                <div class="processing-title" id="badgeProcessingTitle" data-i18n="processingBadgeTitle">Обробка у високій якості...</div>
+                <div class="processing-sub" id="badgeProcessingSub" data-i18n="processingBadgeSub">Збереження оригінальної деталізації</div>
+              </div>
+            </div>
           </div>
 
           <!-- Floating Glass Micro-Action HUD docked at bottom of Lens -->
@@ -2522,7 +2636,8 @@
             <button type="button" class="step-btn" id="copyIncBtn" data-i18n-title="incQtyTooltip" title="Збільшити">+</button>
           </div>
           <button type="button" class="btn-primary-add" id="addToSheetBtn">
-            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg class="btn-icon" id="addToSheetPlusIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg class="btn-icon spin-icon" id="addToSheetSpinner" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
             <span id="addToSheetBtnText" data-i18n="addToSheet">Додати на аркуш</span>
           </button>
           <button type="button" class="btn-delete-active-badge hidden" id="deleteActiveBadgeBtn" data-i18n-title="cardDeleteTooltip" title="Видалити значок">
@@ -2599,6 +2714,12 @@
       <div class="sheet-preview-wrap">
         <div class="sheet-canvas-container" id="sheetCanvasContainer">
           <canvas id="sheetCanvas" width="840" height="1188"></canvas>
+          <div id="sheetProcessingOverlay" class="sheet-processing-overlay" aria-live="polite">
+            <div class="sheet-processing-pill">
+              <div class="processing-spinner-mini"></div>
+              <span id="sheetProcessingText" data-i18n="updatingSheetText">Оновлення аркуша...</span>
+            </div>
+          </div>
         </div>
 
         <!-- Pagination Bar under White Sheet -->
@@ -2910,6 +3031,12 @@
         toastNeedBadgesForPrint: "Спочатку додайте значки на аркуш для друку!",
         toastUpdated: "Значок оновлено в документі",
         toastImageError: "Помилка збереження зображення",
+        processingBadgeTitle: "Обробка у високій якості...",
+        processingBadgeSub: "Збереження оригінальної деталізації",
+        processingBadgeBtn: "Обробка значка...",
+        loadingPhotoTitle: "Завантаження фото...",
+        loadingPhotoSub: "Підготовка оригінальної якості",
+        updatingSheetText: "Оновлення аркуша...",
         filePrefix: "PinBadges"
       },
       en: {
@@ -3056,6 +3183,12 @@
         toastNeedBadgesForPrint: "Please add badges to the sheet before printing!",
         toastUpdated: "Badge updated in document",
         toastImageError: "Error saving sheet image",
+        processingBadgeTitle: "Rendering High-Res Badge...",
+        processingBadgeSub: "Preserving original photo detail",
+        processingBadgeBtn: "Processing badge...",
+        loadingPhotoTitle: "Loading Photo...",
+        loadingPhotoSub: "Preparing original resolution",
+        updatingSheetText: "Updating sheet...",
         filePrefix: "PinBadges"
       }
     };
@@ -4013,16 +4146,66 @@
       });
     }
 
+    function setViewfinderLoading(active, titleText, subText) {
+      const overlay = document.getElementById('badgeProcessingOverlay');
+      if (!overlay) return;
+      const dict = I18N[state.lang] || I18N.uk;
+      const titleEl = document.getElementById('badgeProcessingTitle');
+      const subEl = document.getElementById('badgeProcessingSub');
+      if (titleEl) titleEl.textContent = titleText || dict.processingBadgeTitle;
+      if (subEl) subEl.textContent = subText || dict.processingBadgeSub;
+      overlay.classList.toggle('active', Boolean(active));
+    }
+
+    function setSheetLoading(active, text) {
+      const overlay = document.getElementById('sheetProcessingOverlay');
+      if (!overlay) return;
+      const dict = I18N[state.lang] || I18N.uk;
+      const textEl = document.getElementById('sheetProcessingText');
+      if (textEl) textEl.textContent = text || dict.updatingSheetText;
+      overlay.classList.toggle('active', Boolean(active));
+    }
+
+    function setAddButtonLoading(active) {
+      const addBtn = document.getElementById('addToSheetBtn');
+      const plusIcon = document.getElementById('addToSheetPlusIcon');
+      const spinner = document.getElementById('addToSheetSpinner');
+      const textSpan = document.getElementById('addToSheetBtnText');
+      const dict = I18N[state.lang] || I18N.uk;
+
+      if (active) {
+        if (addBtn) {
+          addBtn.disabled = true;
+          addBtn.classList.add('is-loading');
+        }
+        if (plusIcon) plusIcon.style.display = 'none';
+        if (spinner) spinner.style.display = 'inline-block';
+        if (textSpan) textSpan.textContent = dict.processingBadgeBtn;
+      } else {
+        if (addBtn) {
+          addBtn.disabled = false;
+          addBtn.classList.remove('is-loading');
+        }
+        if (plusIcon) plusIcon.style.display = '';
+        if (spinner) spinner.style.display = 'none';
+        updateAddToSheetButtonUI();
+      }
+    }
+
     function loadImageFile(file) {
       if (!file) return;
       const isImage = (file.type && file.type.startsWith('image/')) || 
                       /\.(jpe?g|png|webp|bmp|gif|svg|avif|heic|heif)$/i.test(file.name || '');
       if (!isImage && file.type) return;
 
+      const dict = I18N[state.lang] || I18N.uk;
+      setViewfinderLoading(true, dict.loadingPhotoTitle, dict.loadingPhotoSub);
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
+          setViewfinderLoading(false);
           state.image = img;
           state.sourceImageSrc = e.target.result;
           state.editingBadgeId = null;
@@ -4041,11 +4224,13 @@
           showToast(I18N[state.lang].toastImageLoaded);
         };
         img.onerror = () => {
+          setViewfinderLoading(false);
           showToast(state.lang === 'uk' ? 'Помилка завантаження зображення' : 'Error loading image');
         };
         img.src = e.target.result;
       };
       reader.onerror = () => {
+        setViewfinderLoading(false);
         showToast(state.lang === 'uk' ? 'Помилка читання файлу' : 'Error reading file');
       };
       reader.readAsDataURL(file);
@@ -4218,8 +4403,8 @@
       const zoomFactor = Math.max(0.25, Math.min(1.0, state.zoom || 1.0));
       const effectiveNativePx = Math.round(Math.max(natW, natH) / zoomFactor);
 
-      // Preserve full native source detail up to 4096px, lossless PNG
-      const targetSizePx = Math.max(minDpiPx, Math.min(4096, effectiveNativePx));
+      // Preserve full native source detail up to 2400px (>870 DPI on 70mm pin), lossless PNG
+      const targetSizePx = Math.max(minDpiPx, Math.min(2400, effectiveNativePx));
 
       const offCanvas = document.createElement('canvas');
       offCanvas.width = targetSizePx;
@@ -4326,72 +4511,116 @@
         return;
       }
 
-      const highResDataUrl = generateHighResBadgeDataUrl(state.cutMm, state.visibleMm);
-      if (!highResDataUrl) return;
+      const dict = I18N[state.lang] || I18N.uk;
+      const startTime = Date.now();
+      const hasRAF = typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function';
 
-      const isEditing = Boolean(state.editingBadgeId);
-      const badgeId = state.editingBadgeId || `pin_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+      // Immediately activate prominent loading indicators on button, viewfinder, and sheet
+      setAddButtonLoading(true);
+      setViewfinderLoading(true, dict.processingBadgeTitle, dict.processingBadgeSub);
+      setSheetLoading(true, dict.updatingSheetText);
 
-      // Create a crisp 360x360 thumbnail for queue cards & localStorage fallback
-      const thumbCanvas = document.createElement('canvas');
-      thumbCanvas.width = 360;
-      thumbCanvas.height = 360;
-      const tCtx = thumbCanvas.getContext('2d');
-      tCtx.imageSmoothingEnabled = true;
-      tCtx.imageSmoothingQuality = 'high';
-      const tempImg = new Image();
-      tempImg.onload = () => {
-        tCtx.save();
-        tCtx.beginPath();
-        tCtx.arc(180, 180, 180, 0, Math.PI * 2);
-        tCtx.clip();
-        tCtx.drawImage(tempImg, 0, 0, 360, 360);
-        tCtx.restore();
+      const performAddBadge = () => {
+        const highResDataUrl = generateHighResBadgeDataUrl(state.cutMm, state.visibleMm);
+        if (!highResDataUrl) {
+          setAddButtonLoading(false);
+          setViewfinderLoading(false);
+          setSheetLoading(false);
+          return;
+        }
 
-        const badgeItem = {
-          id: badgeId,
-          name: state.imgName,
-          visibleMm: state.visibleMm,
-          cutMm: state.cutMm,
-          count: state.copies,
-          sourceUrl: state.sourceImageSrc || highResDataUrl,
-          transform: {
+        const isEditing = Boolean(state.editingBadgeId);
+        const badgeId = state.editingBadgeId || `pin_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+
+        // Create a crisp 360x360 thumbnail directly from state.image
+        const thumbCanvas = document.createElement('canvas');
+        thumbCanvas.width = 360;
+        thumbCanvas.height = 360;
+        const tCtx = thumbCanvas.getContext('2d');
+        tCtx.imageSmoothingEnabled = true;
+        tCtx.imageSmoothingQuality = 'high';
+
+        const tempImg = new Image();
+        tempImg.onload = () => {
+          const currentTransform = {
             imgX: state.imgX,
             imgY: state.imgY,
             zoom: state.zoom,
             rotation: state.rotation
-          },
-          thumbUrl: thumbCanvas.toDataURL('image/png'),
-          highResUrl: highResDataUrl
-        };
+          };
+          drawBadgeOnSheetContext(
+            tCtx,
+            180,
+            180,
+            180,
+            { transform: currentTransform },
+            state.image,
+            tempImg
+          );
 
-        if (isEditing) {
-          const idx = state.queue.findIndex(it => it.id === badgeId);
-          if (idx !== -1) {
-            state.queue[idx] = badgeItem;
+          const badgeItem = {
+            id: badgeId,
+            name: state.imgName,
+            visibleMm: state.visibleMm,
+            cutMm: state.cutMm,
+            count: state.copies,
+            sourceUrl: state.sourceImageSrc || highResDataUrl,
+            transform: currentTransform,
+            thumbUrl: thumbCanvas.toDataURL('image/png'),
+            highResUrl: highResDataUrl
+          };
+
+          if (isEditing) {
+            const idx = state.queue.findIndex(it => it.id === badgeId);
+            if (idx !== -1) {
+              state.queue[idx] = badgeItem;
+            } else {
+              state.queue.push(badgeItem);
+            }
+            state.editingBadgeId = null;
+            updateAddToSheetButtonUI();
           } else {
             state.queue.push(badgeItem);
           }
-          state.editingBadgeId = null;
-          updateAddToSheetButtonUI();
-        } else {
-          state.queue.push(badgeItem);
-        }
 
-        renderQueueList();
-        saveState();
-        recalculatePackingAndRender();
-        triggerHaptic('success');
+          renderQueueList();
+          saveState();
+          recalculatePackingAndRender();
+          triggerHaptic('success');
 
-        const msg = isEditing
-          ? (state.lang === 'uk' ? I18N.uk.toastUpdated : I18N.en.toastUpdated)
-          : (state.lang === 'uk'
-              ? I18N.uk.toastAdded.replace('{count}', state.copies)
-              : I18N.en.toastAdded.replace('{count}', state.copies));
-        const actionText = state.lang === 'uk' ? I18N.uk.viewSheetAction : I18N.en.viewSheetAction;
-        showToast(msg, actionText, () => switchMobileTab('sheet'));
+          const finishLoadingUI = () => {
+            setAddButtonLoading(false);
+            setViewfinderLoading(false);
+            setSheetLoading(false);
+
+            const msg = isEditing
+              ? (state.lang === 'uk' ? I18N.uk.toastUpdated : I18N.en.toastUpdated)
+              : (state.lang === 'uk'
+                  ? I18N.uk.toastAdded.replace('{count}', state.copies)
+                  : I18N.en.toastAdded.replace('{count}', state.copies));
+            const actionText = state.lang === 'uk' ? I18N.uk.viewSheetAction : I18N.en.viewSheetAction;
+            showToast(msg, actionText, () => switchMobileTab('sheet'));
+          };
+
+          if (hasRAF) {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, 240 - elapsed);
+            setTimeout(finishLoadingUI, remaining);
+          } else {
+            finishLoadingUI();
+          }
+        };
+        tempImg.src = highResDataUrl;
       };
-      tempImg.src = highResDataUrl;
+
+      // In a real browser, yield a paint frame first so the loading UI renders immediately before canvas encoding
+      if (hasRAF) {
+        window.requestAnimationFrame(() => {
+          setTimeout(performAddBadge, 16);
+        });
+      } else {
+        performAddBadge();
+      }
     }
 
     function renderQueueList() {
